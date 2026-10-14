@@ -36,7 +36,7 @@ func Apply(ctx context.Context, db *sql.DB) error {
 			return fmt.Errorf("read initial migration: %w", err)
 		}
 		// First migration is plain DDL without stored procedures/quoted semicolons.
-		for _, statement := range strings.Split(string(sqlText), ";") {
+		for _, statement := range splitStatements(string(sqlText)) {
 			statement = strings.TrimSpace(statement)
 			if statement == "" {
 				continue
@@ -50,4 +50,25 @@ func Apply(ctx context.Context, db *sql.DB) error {
 		}
 	}
 	return tx.Commit()
+}
+
+// splitStatements is intentionally scoped to simple DDL. Strip SQL line comments
+// before splitting so semicolons in comments cannot be executed as SQL.
+// Use a dedicated SQL migration parser if future migrations include procedural
+// blocks, dollar-quoted strings or semicolons within string literals.
+func splitStatements(script string) []string {
+	var lines []string
+	for _, line := range strings.Split(script, "\n") {
+		if strings.HasPrefix(strings.TrimSpace(line), "--") {
+			continue
+		}
+		lines = append(lines, line)
+	}
+	var statements []string
+	for _, raw := range strings.Split(strings.Join(lines, "\n"), ";") {
+		if statement := strings.TrimSpace(raw); statement != "" {
+			statements = append(statements, statement)
+		}
+	}
+	return statements
 }
