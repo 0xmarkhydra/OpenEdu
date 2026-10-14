@@ -4,7 +4,7 @@ Status legend: IMPLEMENTED = executable and tested; FOUNDATION = meaningful code
 
 | Capability | Status | Notes |
 | --- | --- | --- |
-| Go API and PostgreSQL schema | FOUNDATION | migrations must be applied; build/test evidence pending |
+| Go API and PostgreSQL schema | FOUNDATION | Railway Docker build succeeded; startup migration applied and /health/ready succeeded; Go tests and vet passed |
 | JWT auth boundary | FOUNDATION | no token issuance/login yet |
 | Tenant-safe library catalog | FOUNDATION | published listing and basic mutation, more tests needed |
 | School management and RBAC | FOUNDATION | schema/policies only; no full admin workflows |
@@ -12,7 +12,7 @@ Status legend: IMPLEMENTED = executable and tested; FOUNDATION = meaningful code
 | Learning/assignments/grading | PLANNED | not implemented |
 | Attendance and leave | PLANNED | not implemented |
 | Communication and notifications | PLANNED | not implemented |
-| Web library foundation | FOUNDATION | Next.js responsive UI connects to real published catalog; build not executed yet |
+| Web library foundation | FOUNDATION | Next.js production build succeeded locally and on Railway; public HTTPS returns 200; catalog shows correct empty state (no licensed books loaded) |
 | Flutter mobile | PLANNED | not implemented |
 | Production security and load testing | PLANNED | not validated |
 

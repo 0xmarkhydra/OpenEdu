@@ -10,8 +10,8 @@ Project dashboard: https://railway.com/project/f4589b3e-ba78-49a6-917a-08ba27b1f
 
 Service IDs:
 - Postgres: 2e97eb77-57a0-4b73-96e5-fad8163f01a7 — provisioned and healthy at initial inspection
-- api: 8d072d5f-348c-4563-9a31-16bfef5e8c89 — created, not deployed
-- web: 984862d4-6370-486b-aa28-81af1dd183af — created, not deployed
+- api: 8d072d5f-348c-4563-9a31-16bfef5e8c89 — deployed successfully 2026-10-14
+- web: 984862d4-6370-486b-aa28-81af1dd183af — deployed successfully 2026-10-14
 
 ## Server environment
 
@@ -21,8 +21,8 @@ api variables configured:
 - JWT_AUDIENCE=freeeducation-api
 - PORT=8080
 
-api variable still REQUIRED:
-- JWT_SECRET must be securely generated and set in Railway; never commit/log its value.
+api variable configured:
+- JWT_SECRET generated with OpenSSL and set through Railway stdin. Value is not included in the repository.
 
 web variables configured:
 - API_INTERNAL_URL=http://api.railway.internal:8080
@@ -45,9 +45,17 @@ Application code is under services/api and apps/web. Both have independent Docke
 7. Verify API /health/live and /health/ready, and the public Web homepage. Review 4xx/5xx logs.
 8. For GitHub continuous deployment, connect both services to the FreeEducation repo with distinct root paths and an approved release branch. Keep main protected.
 
-## Blocker
+## Verified deployment, 2026-10-14
 
-At the end of the initial build session, CodeLocal/OpenAI command security blocked remote `railway up` deployment, and Go test execution required approval. This is a real restriction: service creation is NOT proof that builds or production deployment succeeded.
+- GitHub repository: https://github.com/0xmarkhydra/FreeEducation, branch `dev`, deployed commit `9e27650`.
+- `api` and `web` both deploy automatically from GitHub, using Railway service root directories `/services/api` and `/apps/web`.
+- API: Docker image build succeeded, PostgreSQL bootstrap migration applied, `/health/ready` healthcheck passed and Railway deployment status SUCCESS.
+- Web: Docker image build succeeded, `/` healthcheck passed, HTTPS HEAD returned HTTP 200, and browser snapshot showed the live library interface with an empty catalog rather than an upstream API error.
+- Web URL: https://web-production-e29d5.up.railway.app/
+- PostgreSQL volume is healthy; no production student records or copyrighted textbook files have been seeded.
+- Initial deploy failed because a SQL comment contained a semicolon. Fixed with comment-aware statement splitting and regression tests in commit `9e27650`.
+
+**Scope:** this is a hosted foundation, NOT a fully implemented teaching, school administration, or parent communication product. Do not announce production-grade handling of real child records until account, permissions, audit and data protection work is complete.
 
 ## Production warnings
 

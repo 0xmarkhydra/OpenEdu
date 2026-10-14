@@ -4,6 +4,13 @@ Scalable education platform: licensed digital library, assessment, student/teach
 
 **Status:** early implementation. Scope: [Notion proposal for client review](https://app.notion.com/p/3f37dabb721d81549ec8d5670a5d5ac7). Proposed items are NOT customer-approved commitments.
 
+## Hosted foundation
+
+- Public web: https://web-production-e29d5.up.railway.app/
+- Railway project: https://railway.com/project/f4589b3e-ba78-49a6-917a-08ba27b1f77b
+- GitHub deployments track branch `dev`; `api` is private inside the Railway project. See `docs/RAILWAY_DEPLOY.md` for verified status.
+- The catalog intentionally starts empty until legally licensed resources have been approved and published. Student, school admin and parent flows are not launched yet.
+
 ## Architecture
 Go 1.26 HTTP API, PostgreSQL 16, Next.js/TypeScript web, planned Flutter mobile, S3 object storage for licensed files. Modular-monolith first with extraction-ready contexts. See docs/ARCHITECTURE.md and docs/PROJECT_STATUS.md.
 
