@@ -21,6 +21,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               <Link href="/">Thư viện</Link>
               <span className="nav-disabled" title="Đang phát triển">Học tập</span>
               <span className="nav-disabled" title="Đang phát triển">Sổ liên lạc</span>
+              <Link href="/login">Đăng nhập</Link>
             </nav>
           </div>
         </header>

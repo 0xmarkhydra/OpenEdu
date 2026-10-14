@@ -19,18 +19,27 @@ import (
 var validID = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
 
 type Server struct {
-	store  catalog.Store
-	verify *auth.Verifier
-	db     *sql.DB
+	store    catalog.Store
+	verify   *auth.Verifier
+	db       *sql.DB
+	identity *auth.Identity
 }
 
 func New(store catalog.Store, verifier *auth.Verifier, db *sql.DB) http.Handler {
 	s := &Server{store: store, verify: verifier, db: db}
+	if db != nil {
+		s.identity = auth.NewIdentity(db, verifier)
+	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health/live", func(w http.ResponseWriter, _ *http.Request) {
 		respond(w, http.StatusOK, map[string]string{"status": "ok"})
 	})
 	mux.HandleFunc("GET /health/ready", s.ready)
+	mux.HandleFunc("POST /v1/auth/login", s.login)
+	mux.HandleFunc("GET /v1/auth/me", s.me)
+	mux.HandleFunc("GET /v1/admin/schools", s.schools)
+	mux.HandleFunc("POST /v1/admin/schools", s.schools)
+	mux.HandleFunc("POST /v1/admin/schools/{id}/members", s.addSchoolMember)
 	mux.HandleFunc("GET /v1/books", s.list)
 	mux.HandleFunc("GET /v1/books/{id}", s.get)
 	mux.HandleFunc("POST /v1/admin/books", s.create)
@@ -74,6 +83,9 @@ func (s *Server) claims(r *http.Request) (auth.Claims, bool, error) {
 	c, err := s.verify.Verify(strings.TrimSpace(strings.TrimPrefix(value, "Bearer ")))
 	if err != nil {
 		return auth.Claims{}, false, err
+	}
+	if s.identity != nil && !s.identity.ValidPrincipal(r.Context(), c) {
+		return auth.Claims{}, false, auth.ErrInvalidToken
 	}
 	return c, true, nil
 }

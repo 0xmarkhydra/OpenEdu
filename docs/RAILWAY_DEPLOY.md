@@ -57,6 +57,10 @@ Application code is under services/api and apps/web. Both have independent Docke
 
 **Scope:** this is a hosted foundation, NOT a fully implemented teaching, school administration, or parent communication product. Do not announce production-grade handling of real child records until account, permissions, audit and data protection work is complete.
 
+## Auth rollout
+
+Identity v0.2 adds a new append-only migration and requires explicit one-time initial administrator provisioning. See [AUTH_SETUP.md](AUTH_SETUP.md). No default account is created by deploying the code. Test child information must remain off production.
+
 ## Production warnings
 
 - The identity provider and approved admin provisioning flows do not exist yet. This is not a launch-ready educational product.

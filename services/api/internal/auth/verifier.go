@@ -94,3 +94,22 @@ func (v *Verifier) Verify(token string) (Claims, error) {
 	}
 	return c, nil
 }
+
+func (v *Verifier) Issue(c Claims, ttl time.Duration) (string, error) {
+	if !uuidID.MatchString(c.Subject) || (c.SchoolID != "" && !uuidID.MatchString(c.SchoolID)) || len(c.Roles) == 0 || ttl <= 0 || ttl > time.Hour {
+		return "", ErrInvalidToken
+	}
+	c.Issuer = v.issuer
+	c.Audience = v.audience
+	c.NotBefore = time.Now().Unix()
+	c.Expires = time.Now().Add(ttl).Unix()
+	header := base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"HS256","typ":"JWT"}`))
+	body, err := json.Marshal(c)
+	if err != nil {
+		return "", err
+	}
+	unsigned := header + "." + base64.RawURLEncoding.EncodeToString(body)
+	mac := hmac.New(sha256.New, v.secret)
+	mac.Write([]byte(unsigned))
+	return unsigned + "." + base64.RawURLEncoding.EncodeToString(mac.Sum(nil)), nil
+}

@@ -22,6 +22,7 @@ Go 1.26 HTTP API, PostgreSQL 16, Next.js/TypeScript web, planned Flutter mobile,
 - Tests: make api-test
 - Web: cd apps/web && npm install && npm run dev (http://localhost:3000). The web app renders real published catalog API data, never fabricated textbook records.
 - API contract: packages/contracts/openapi.yaml
+- Identity + school management: /login and /dashboard, see docs/AUTH_SETUP.md. No default admin exists; it requires explicit one-time operator provisioning.
 - Docker images: services/api/Dockerfile and apps/web/Dockerfile; web dependency lockfile and CI build still pending.
 
 The public catalog only serves published public books. Privileged operations require a verified JWT from a trusted issuer. Identity login / issuing production tokens is NOT implemented in this initial slice.

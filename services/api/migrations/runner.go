@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-//go:embed 0001_initial.sql
+//go:embed 000*.sql
 var scripts embed.FS
 
 // Apply serializes bootstrap across horizontally scaled API replicas.
@@ -26,26 +26,24 @@ func Apply(ctx context.Context, db *sql.DB) error {
 	if _, err := tx.ExecContext(ctx, "CREATE TABLE IF NOT EXISTS schema_migrations (version text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())"); err != nil {
 		return fmt.Errorf("migration ledger: %w", err)
 	}
-	var done bool
-	if err := tx.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM schema_migrations WHERE version=$1)", "0001_initial").Scan(&done); err != nil {
-		return err
-	}
-	if !done {
-		sqlText, err := scripts.ReadFile("0001_initial.sql")
+	for _, version := range []string{"0001_initial", "0002_identity"} {
+		var done bool
+		if err := tx.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM schema_migrations WHERE version=$1)", version).Scan(&done); err != nil {
+			return err
+		}
+		if done {
+			continue
+		}
+		sqlText, err := scripts.ReadFile(version + ".sql")
 		if err != nil {
-			return fmt.Errorf("read initial migration: %w", err)
+			return fmt.Errorf("read %s: %w", version, err)
 		}
-		// First migration is plain DDL without stored procedures/quoted semicolons.
 		for _, statement := range splitStatements(string(sqlText)) {
-			statement = strings.TrimSpace(statement)
-			if statement == "" {
-				continue
-			}
 			if _, err := tx.ExecContext(ctx, statement); err != nil {
-				return fmt.Errorf("migration 0001_initial failed: %w", err)
+				return fmt.Errorf("migration %s failed: %w", version, err)
 			}
 		}
-		if _, err := tx.ExecContext(ctx, "INSERT INTO schema_migrations(version) VALUES ($1)", "0001_initial"); err != nil {
+		if _, err := tx.ExecContext(ctx, "INSERT INTO schema_migrations(version) VALUES ($1)", version); err != nil {
 			return err
 		}
 	}
