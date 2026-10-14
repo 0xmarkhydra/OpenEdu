@@ -1,0 +1,196 @@
+openapi: 3.0.3
+info:
+  title: FreeEducation Core API
+  version: 0.1.0
+  description: |
+    Initial public catalog and protected editorial endpoints.
+    Auth issuer and login are separate planned capabilities.
+servers:
+  - url: http://localhost:8080
+paths:
+  /health/live:
+    get:
+      operationId: getLiveness
+      responses:
+        '200':
+          description: API process is responsive.
+  /health/ready:
+    get:
+      operationId: getReadiness
+      responses:
+        '200':
+          description: Database reachable.
+        '503':
+          description: Database unavailable.
+  /v1/books:
+    get:
+      operationId: listPublishedBooks
+      description: |
+        Anonymous users see public published books only. A valid signed token permits
+        listing published books for its school_id scope. Client-supplied tenant headers are ignored.
+      parameters:
+        - in: query
+          name: grade
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+        - in: query
+          name: subject
+          schema:
+            type: string
+            maxLength: 80
+        - in: query
+          name: q
+          schema:
+            type: string
+            maxLength: 120
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Published and authorized books.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Book'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/books/{id}:
+    get:
+      operationId: getPublishedBook
+      parameters:
+        - $ref: '#/components/parameters/BookID'
+      responses:
+        '200':
+          description: Published and authorized book.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Unknown or inaccessible book.
+  /v1/admin/books:
+    post:
+      operationId: createBookDraft
+      security:
+        - bearerAuth: []
+      description: Role platform_admin, content_admin, or school_admin. Draft only.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '201':
+          description: Created draft.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Insufficient role or wrong school visibility.
+  /v1/admin/books/{id}/{action}:
+    post:
+      operationId: changeBookReviewStatus
+      security:
+        - bearerAuth: []
+      description: |
+        submit: draft -> review (author roles)
+        approve: review -> approved (reviewers only)
+        publish: approved -> published (publisher roles)
+        archive: published -> archived (publisher roles).
+        State mutation and audit are transactional.
+      parameters:
+        - $ref: '#/components/parameters/BookID'
+        - in: path
+          name: action
+          required: true
+          schema:
+            type: string
+            enum: [submit, approve, publish, archive]
+      responses:
+        '200':
+          description: Transition complete.
+        '403':
+          description: Insufficient permissions.
+        '404':
+          description: Book unavailable.
+        '409':
+          description: Invalid state transition.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    BookID:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    Unauthorized:
+      description: Missing or invalid token.
+  schemas:
+    BookInput:
+      type: object
+      required: [title, grade, subject_code, rights_owner, rights_license, rights_source, visibility]
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          maxLength: 500
+        grade:
+          type: integer
+          minimum: 1
+          maximum: 12
+        subject_code:
+          type: string
+          maxLength: 500
+        rights_owner:
+          type: string
+          maxLength: 500
+        rights_license:
+          type: string
+          maxLength: 500
+        rights_source:
+          type: string
+          maxLength: 500
+        visibility:
+          type: string
+          enum: [public, school]
+    Book:
+      allOf:
+        - $ref: '#/components/schemas/BookInput'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            school_id:
+              type: string
+              format: uuid
+            status:
+              type: string
+              enum: [draft, review, approved, published, archived]
+            published_at:
+              type: string
+              format: date-time

@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+bin/
+coverage.out
+*.test
+node_modules/
+.next/
+dist/
+*.tsbuildinfo
+.dart_tool/
+build/
+.DS_Store
+.idea/
+.vscode/
