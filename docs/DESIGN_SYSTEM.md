@@ -35,7 +35,7 @@ Use these CSS classes consistently; do not add conflicting gradients or random i
 
 ## Icon migration audit (2026-10-15)
 
-- Public header, library, login, book outline/lesson reader, platform dashboard, school dashboard, parent portal and editorial navigation migrated to named Lucide components.
+- Public header, library, login, book outline/lesson reader, platform dashboard, school dashboard, parent portal and editorial navigation migrated to named Lucide components. The branded browser favicon is provided as a dedicated `apps/web/app/icon.svg` asset (not an ad-hoc interactive UI icon).
 - All existing decorative emoji and Unicode glyph icons in web TSX replaced; navigation no longer has duplicate links to the same role-neutral destination.
 - School section tabs now use accessible Radix Tabs, supporting keyboard navigation and proper tabpanels. Shared shadcn-compatible Button/Card primitives are used in public and administrative screens.
 - CI/deployment enforcement: `npm run build` first runs `npm run icons:check`, rejecting legacy pictograms, raw inline SVG for commonplace icons, and mixed icon styles. `npm run verify` checks TypeScript plus build.
