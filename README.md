@@ -12,17 +12,17 @@ The frontend uses **local shadcn/ui-style components + Tailwind CSS v4 + Radix U
 
 ## Hosted foundation
 
-- Public web: https://web-production-e29d5.up.railway.app/
+- Public web: https://openedu.codelocal.cloud/
 - Railway project: https://railway.com/project/f4589b3e-ba78-49a6-917a-08ba27b1f77b
 - GitHub deployments track branch `dev`; `api` is private inside the Railway project. See `docs/RAILWAY_DEPLOY.md` for verified status.
 - The catalog intentionally starts empty until legally licensed resources are approved and published. Web login, school operations, parent portal and text lesson reader are implemented in code; **operator provisioning, privacy review and a verified new production release** are required before real student use.
 
 ## Architecture
-Go 1.26 HTTP API, PostgreSQL 16, Next.js/TypeScript web, planned Flutter mobile, S3 object storage for licensed files. Modular-monolith first with extraction-ready contexts. See docs/ARCHITECTURE.md and docs/PROJECT_STATUS.md.
+Go 1.26 HTTP API, Railway PostgreSQL 18, Next.js/TypeScript web, Flutter iOS/Android app foundation, and planned S3-compatible licensed media storage. Modular-monolith first with extraction-ready contexts. See docs/ARCHITECTURE.md and docs/PROJECT_STATUS.md.
 
 ## Quickstart
 - docker compose up -d postgres
-- On API startup, the PostgreSQL baseline migration runs transactionally under an advisory lock. Configure DATABASE_URL to a PostgreSQL 16 instance (example in .env.example).
+- On API startup, the PostgreSQL baseline migration runs transactionally under an advisory lock. Configure DATABASE_URL to a supported PostgreSQL instance (example in .env.example).
 - Set DATABASE_URL and a JWT_SECRET of at least 32 bytes; cd services/api && go mod tidy && go run ./cmd/api
 - Visit http://localhost:8080/health/live and /health/ready
 - Tests: make api-test
@@ -40,4 +40,4 @@ Development branch: dev. Test before merging into main. License for project not 
 
 ## 0.4 progress — communications and native app foundation
 
-The current development branch adds tenant-authorized teacher/guardian messaging with read receipts, school aggregate reporting, authenticated password rotation with immediate JWT revocation, and a native Flutter app foundation (iOS Simulator compiled; Android SDK not configured). Read `docs/API_OPERATIONS.md`, `apps/mobile/README.md`, and **`docs/RELEASE_GATES.md`**. This is not yet a fully launched school platform.
+The current development branch adds tenant-authorized teacher/guardian messaging with read receipts, school aggregate reporting, authenticated password rotation with immediate JWT revocation, and a native Flutter app foundation (iOS Simulator previously compiled; Android SDK not configured). Read `docs/API_OPERATIONS.md`, `apps/mobile/README.md`, and **`docs/RELEASE_GATES.md`**. This is not yet a fully launched school platform.

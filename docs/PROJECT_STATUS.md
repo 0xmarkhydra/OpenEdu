@@ -12,8 +12,8 @@ Status legend: IMPLEMENTED = executable and tested; FOUNDATION = meaningful code
 | Learning/assignments/grading | FOUNDATION | teacher assignments, submissions, scores and feedback pass disposable PostgreSQL tests; file attachments, exams/rubrics missing |
 | Attendance and leave | FOUNDATION | teacher attendance, student and verified guardian leave request, approval/rejection pass PostgreSQL integration |
 | Communication and notifications | FOUNDATION | school announcements and authorized teacher-guardian messages with read receipts pass PostgreSQL integration; push, surveys and real-time delivery missing |
-| Web portal / iOS glass design | FOUNDATION | responsive public library, lesson reader, login, admin/CMS, teacher/student/guardian pages build locally; Safari device QA and production deployment pending |
-| Flutter mobile | FOUNDATION | Flutter project built for iOS Simulator; shared UI for library, lessons, login, classes, announcements and messages; Android SDK and mobile API hostname pending |
+| Web portal / iOS glass design | FOUNDATION | responsive public library, lesson reader, login, admin/CMS, teacher/student/guardian pages compile and Railway Web/API at commit c15e004 report SUCCESS; HTTPS home/login 200 on configured domain; Safari/device and authenticated end-to-end acceptance remain pending |
+| Flutter mobile | FOUNDATION | Flutter project previously built for iOS Simulator; widget tests pass with bookmark/completion dialog, library, lessons, login, classes, announcements and messages; Android SDK and secure public mobile API hostname pending |
 | Production security and load testing | PLANNED | JWT auth version and password-change revocation tested on disposable PostgreSQL; formal pen-test, 2FA, backups and load tests not validated |
 
 Do not infer production readiness from repository structure alone.
