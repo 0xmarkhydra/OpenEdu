@@ -1,8 +1,10 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { School, UsersRound, GraduationCap, Bell, LayoutDashboard, ClipboardCheck, CalendarDays, NotebookPen, CalendarClock, CircleCheck, CircleX } from "lucide-react";
+import { School, UsersRound, GraduationCap, Bell, LayoutDashboard, ClipboardCheck, CalendarDays, NotebookPen, CalendarClock, CircleCheck, CircleX, MessageCircle, BarChart3 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import MessagesPanel from "./messages-panel";
+import ReportsPanel from "./reports-panel";
 type RecordItem=Record<string,unknown>;
 type Overview={classes:number;students:number;teachers:number;announcements:number};
 type Year={id:string;name:string;starts_on:string;ends_on:string};
@@ -223,6 +225,8 @@ export default function SchoolPanel({schoolId,userRoles}:{schoolId:string;userRo
     {!leaves.length&&<p className="muted">Chưa có đơn xin nghỉ.</p>}
    </section>}
   </>}
+  {tab==="messages"&&<MessagesPanel/>}
+  {tab==="reports"&&isAdmin&&<ReportsPanel schoolId={schoolId}/>}
   {tab==="announcements"&&<section className="glass-card"><h2 className="icon-heading"><Bell size={23} strokeWidth={1.9} aria-hidden="true"/>Thông báo nhà trường</h2>
    {notices.map(n=><article className="notice" key={n.id}><span className="pill">{n.audience}</span><h3>{n.title}</h3><p>{n.content}</p><small>{new Date(n.created_at).toLocaleDateString("vi-VN")}</small></article>)}
    {!notices.length&&<p className="muted">Chưa có thông báo.</p>}
@@ -244,6 +248,8 @@ export default function SchoolPanel({schoolId,userRoles}:{schoolId:string;userRo
   { id:"schedule", label:"Thời khóa biểu", Icon:CalendarDays },
   { id:"announcements", label:"Thông báo", Icon:Bell },
   { id:"leaves", label:"Xin nghỉ", Icon:CalendarClock },
+  ...(userRoles.includes("teacher")?[{id:"messages",label:"Tin nhắn",Icon:MessageCircle}]:[]),
+  ...(isAdmin?[{id:"reports",label:"Báo cáo",Icon:BarChart3}]:[]),
  ];
  return <Tabs className="school-portal" value={tab} onValueChange={setTab}>
   <TabsList aria-label="Phân hệ trường học">

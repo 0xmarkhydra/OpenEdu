@@ -95,3 +95,20 @@ html{color-scheme:light}body{font-family:-apple-system,BlinkMacSystemFont,"SF Pr
 .ui-tabs-trigger:focus-visible{outline:3px solid rgba(76,119,241,.72);outline-offset:2px}
 @media (max-width:650px){.site-header nav a{padding:9px 10px}.site-header nav a svg{width:16px;height:16px}.glass-tabs .ui-tabs-trigger{gap:7px}.site-header .logo{flex-shrink:0}.header-inner{flex-wrap:wrap;justify-content:center;gap:4px 12px;padding-top:9px;padding-bottom:9px}.site-header nav{flex-wrap:wrap;justify-content:center}}
 @media(prefers-reduced-motion:reduce){.ui-button:hover:not(:disabled){transform:none}}
+/* Safe parent-teacher correspondence — iOS Liquid Glass */
+.messages-panel{display:grid;gap:20px;min-width:0}
+.messages-heading{display:flex;align-items:start;justify-content:space-between;gap:16px}
+.messages-heading h2{margin:0}.messages-heading p{margin:9px 0 0}
+.messages-layout{min-width:0;display:grid;gap:18px}
+.messages-contacts{display:grid;gap:8px;color:#486181;font-size:13px;font-weight:700}
+.messages-contacts select,.messages-compose textarea{display:block;width:100%;border:1px solid #d4e0f4;background:rgba(255,255,255,.88);color:#263a5e;border-radius:14px;font:inherit;padding:12px 14px}
+.messages-thread{display:flex;flex-direction:column;align-items:stretch;gap:11px;min-height:130px;max-height:460px;overflow:auto;padding:18px;background:rgba(236,243,255,.48);border-radius:20px;border:1px solid #ffffffd6}
+.message-bubble{max-width:85%;padding:12px 16px;border-radius:19px;word-break:break-word;white-space:pre-wrap;border:1px solid #fff8;box-shadow:0 4px 13px #567fc518}
+.message-bubble p{margin:0 0 8px;line-height:1.6}.message-bubble small{font-size:11px;color:#8090aa}
+.message-bubble.mine{align-self:flex-end;background:linear-gradient(140deg,#4c8de9,#7771dc);color:white}
+.message-bubble.mine small{color:#e8e9ff}.message-bubble.theirs{align-self:flex-start;background:#fff}
+.message-mark{border:0;background:transparent;color:#416aca;font-weight:700;display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:6px 0;cursor:pointer}
+.messages-compose{display:grid;gap:8px}.messages-compose>label{font-weight:700;color:#486181;font-size:13px}
+.messages-compose textarea{resize:vertical;min-height:90px}.messages-compose-actions{display:flex;gap:16px;align-items:center;justify-content:space-between}
+.messages-compose-actions small{color:#8292ab}
+@media(max-width:600px){.messages-thread{padding:12px}.message-bubble{max-width:96%}}

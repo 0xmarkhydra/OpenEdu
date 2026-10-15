@@ -16,13 +16,14 @@ var ErrInvalidToken = errors.New("invalid authentication token")
 var uuidID = regexp.MustCompile(`^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$`)
 
 type Claims struct {
-	Subject   string   `json:"sub"`
-	SchoolID  string   `json:"school_id"`
-	Roles     []string `json:"roles"`
-	Issuer    string   `json:"iss"`
-	Audience  string   `json:"aud"`
-	Expires   int64    `json:"exp"`
-	NotBefore int64    `json:"nbf"`
+	Subject     string   `json:"sub"`
+	SchoolID    string   `json:"school_id"`
+	Roles       []string `json:"roles"`
+	Issuer      string   `json:"iss"`
+	Audience    string   `json:"aud"`
+	Expires     int64    `json:"exp"`
+	NotBefore   int64    `json:"nbf"`
+	AuthVersion int64    `json:"auth_version"`
 }
 
 func (c Claims) HasRole(role string) bool {
@@ -98,6 +99,9 @@ func (v *Verifier) Verify(token string) (Claims, error) {
 func (v *Verifier) Issue(c Claims, ttl time.Duration) (string, error) {
 	if !uuidID.MatchString(c.Subject) || (c.SchoolID != "" && !uuidID.MatchString(c.SchoolID)) || len(c.Roles) == 0 || ttl <= 0 || ttl > time.Hour {
 		return "", ErrInvalidToken
+	}
+	if c.AuthVersion == 0 {
+		c.AuthVersion = 1
 	}
 	c.Issuer = v.issuer
 	c.Audience = v.audience

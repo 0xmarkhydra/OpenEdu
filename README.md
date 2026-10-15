@@ -37,3 +37,7 @@ The public catalog serves published licensed public books. School-scoped books a
 No default passwords. Do not commit student information, textbook PDFs, license keys or private env vars. School authorization must be enforced at query and application layers.
 
 Development branch: dev. Test before merging into main. License for project not yet decided; no third-party textbook redistribution is permitted by default.
+
+## 0.4 progress — communications and native app foundation
+
+The current development branch adds tenant-authorized teacher/guardian messaging with read receipts, school aggregate reporting, authenticated password rotation with immediate JWT revocation, and a native Flutter app foundation (iOS Simulator compiled; Android SDK not configured). Read `docs/API_OPERATIONS.md`, `apps/mobile/README.md`, and **`docs/RELEASE_GATES.md`**. This is not yet a fully launched school platform.

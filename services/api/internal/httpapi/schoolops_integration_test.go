@@ -153,6 +153,13 @@ func TestSchoolLearningOperationsPostgres(t *testing.T) {
 	status, _ = request("teacher", "PATCH", classRoute+"/leave-requests", map[string]any{"request_id": leave["id"], "status": "approved"})
 	check(200, status, nil)
 
+	status, unverifiedContacts := request("guardian", "GET", "/v1/me/messages/contacts", nil)
+	check(200, status, unverifiedContacts)
+	if len(unverifiedContacts["items"].([]any)) != 0 {
+		t.Fatalf("contact leaked before verification: %+v", unverifiedContacts)
+	}
+	status, unauthorizedMessage := request("guardian", "POST", "/v1/me/messages", map[string]any{"class_id": classID, "recipient_id": ids["teacher"], "content": "Unverified guardian message"})
+	check(403, status, unauthorizedMessage)
 	status, denied := request("guardian", "GET", "/v1/me/children/"+ids["student"]+"/grades", nil)
 	check(403, status, denied)
 	status, relation := request("principal", "POST", path+"/guardians", map[string]any{"guardian_id": ids["guardian"], "student_id": ids["student"]})
@@ -172,9 +179,50 @@ func TestSchoolLearningOperationsPostgres(t *testing.T) {
 	if attendanceForParent["items"] == nil {
 		t.Fatalf("missing attendance payload: %+v", attendanceForParent)
 	}
+	status, verifiedContacts := request("guardian", "GET", "/v1/me/messages/contacts", nil)
+	check(200, status, verifiedContacts)
+	if len(verifiedContacts["items"].([]any)) != 1 {
+		t.Fatalf("missing teacher contact: %+v", verifiedContacts)
+	}
+	status, sent := request("guardian", "POST", "/v1/me/messages", map[string]any{"class_id": classID, "recipient_id": ids["teacher"], "content": "Con xin được tham gia ôn tập"})
+	check(201, status, sent)
+	status, inbox := request("teacher", "GET", "/v1/me/messages", nil)
+	check(200, status, inbox)
+	if len(inbox["items"].([]any)) != 1 {
+		t.Fatalf("missing message: %+v", inbox)
+	}
+	messageID := sent["id"].(string)
+	status, msg := request("teacher", "PATCH", "/v1/me/messages/"+messageID+"/read", map[string]any{})
+	check(200, status, msg)
+	status, unread := request("student", "GET", "/v1/me/messages", nil)
+	check(403, status, unread)
+	status, msg = request("guardian", "PATCH", "/v1/me/messages/"+messageID+"/read", map[string]any{})
+	check(404, status, msg)
+	status, msg = request("guardian", "POST", "/v1/me/messages", map[string]any{"class_id": classID, "recipient_id": ids["principal"], "content": "Not an assigned teacher"})
+	check(403, status, msg)
 	status, parentLeave := request("guardian", "POST", "/v1/me/children/"+ids["student"]+"/leave", map[string]any{"class_id": classID, "start_on": "2026-10-20", "end_on": "2026-10-21", "reason": "Xin nghỉ có phép"})
 	check(201, status, parentLeave)
 	status, _ = request("guardian", "POST", path+"/guardians", map[string]any{"guardian_id": ids["guardian"], "student_id": ids["student"]})
+	check(403, status, nil)
+	if _, err := db.ExecContext(ctx, `UPDATE guardian_links SET revoked_at=now() WHERE school_id=$1::uuid AND guardian_id=$2::uuid AND student_id=$3::uuid`, schoolA, ids["guardian"], ids["student"]); err != nil {
+		t.Fatal(err)
+	}
+	status, blocked := request("guardian", "GET", "/v1/me/messages", nil)
+	check(200, status, blocked)
+	if len(blocked["items"].([]any)) != 0 {
+		t.Fatalf("revoked guardian retained private messages: %+v", blocked)
+	}
+	status, _ = request("guardian", "POST", "/v1/me/messages", map[string]any{"class_id": classID, "recipient_id": ids["teacher"], "content": "Revoked request"})
+	check(403, status, nil)
+	status, report := request("principal", "GET", path+"/reports", nil)
+	check(200, status, report)
+	stats := report["summary"].(map[string]any)
+	if stats["total_students"].(float64) != 1 || stats["assignments"].(float64) != 1 {
+		t.Fatalf("bad report: %+v", stats)
+	}
+	status, _ = request("student", "GET", path+"/reports", nil)
+	check(403, status, nil)
+	status, _ = request("principal", "GET", "/v1/schools/"+schoolB+"/reports", nil)
 	check(403, status, nil)
 	status, overview := request("principal", "GET", path+"/overview", nil)
 	check(200, status, overview)

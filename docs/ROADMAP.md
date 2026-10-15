@@ -9,11 +9,13 @@ The linked Notion document is a proposal pending customer approval.
 - [x] Trusted JWT verification boundary
 - [x] Password-based login, short-lived JWT token issuance and membership revalidation (Go + PostgreSQL)
 - [x] Platform admin school and member provisioning APIs
+- [x] Authenticated password change with immediate JWT revocation and security event
 - [ ] Password reset, verified invitations, two-factor auth and audited account recovery
 - [x] DB-backed integration testing with disposable PostgreSQL (identity, school operations, guardian isolation, editorial lifecycle)
 - [x] Next.js responsive public library pages scaffolded (build pending)
 - [x] Web login and platform administration dashboard (bootstrap account setup still required)
-- [ ] Mobile Flutter, teacher/student/parent-specific dashboards
+- [x] Flutter iOS/Android shared UI foundation (widget tests + iOS Simulator build)
+- [ ] Role-complete native dashboards, Android SDK build, app store release
 ## Stage 1 — education flows
 - [x] Platform admin school creation/list and school member account provisioning
 - [x] Academic year/class creation, student enrolment and teacher assignments
@@ -27,11 +29,14 @@ The linked Notion document is a proposal pending customer approval.
 - [x] Class attendance and student/verified-parent leave request approval
 ## Stage 2 — full portal
 - [x] Responsive shared student/teacher/parent portal and class timetables
-- [ ] Role-specific analytics, detailed timetable conflict rules
+- [x] Tenant-scoped school aggregate reports (enrollment, attendance, assignments and leave)
+- [ ] Detailed analytics, timetable conflict rules
 - [x] Role-targeted school announcements
-- [ ] Messaging, surveys, events, menus and push notifications
+- [x] Verified teacher–guardian messages with read receipts and immediate relationship revocation
+- [ ] Surveys, calendar events, menus and push notifications
 - [x] CMS draft chapters and lessons plus approve/publish workflow
 - [ ] Full content version history, media storage and license verification
-- [ ] Flutter client and push, reporting/analytics
+- [x] Flutter iOS Simulator-tested client foundation; school-level aggregate web reports
+- [ ] Native Android build, push and role-complete analytics
 
 Each feature needs tenant/role integration tests, OpenAPI contract, audit/PII review, accessibility checks, backup and staged deployment evidence prior to launch.

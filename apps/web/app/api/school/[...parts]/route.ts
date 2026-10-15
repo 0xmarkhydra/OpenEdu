@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 type Context={params:Promise<{parts:string[]}>};
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const valid:Record<string,Set<string>>={
-  schools:new Set(["years","classes","announcements","overview","guardians"]),
+  schools:new Set(["years","classes","announcements","overview","guardians","reports"]),
   classes:new Set(["students","teachers","attendance","assignments","timetable","leave-requests"]),
   assignments:new Set(["submissions"])
 };

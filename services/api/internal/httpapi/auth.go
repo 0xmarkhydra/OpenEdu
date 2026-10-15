@@ -42,6 +42,34 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	}
 	respond(w, 200, result)
 }
+func (s *Server) changePassword(w http.ResponseWriter, r *http.Request) {
+	claims, ok, err := s.claims(r)
+	if !ok || err != nil {
+		fail(w, 401, "authentication required")
+		return
+	}
+	var input struct {
+		Current string `json:"current_password"`
+		Next    string `json:"new_password"`
+	}
+	if !decode(w, r, &input) {
+		return
+	}
+	err = s.identity.ChangePassword(r.Context(), claims.Subject, input.Current, input.Next)
+	if errors.Is(err, auth.ErrCredentials) {
+		fail(w, 401, "current password incorrect")
+		return
+	}
+	if errors.Is(err, auth.ErrPassword) {
+		fail(w, 400, "new password must be different and 12-72 bytes")
+		return
+	}
+	if err != nil {
+		fail(w, 503, "unable to change password")
+		return
+	}
+	respond(w, 200, map[string]string{"status": "password_changed", "session": "revoked"})
+}
 func (s *Server) me(w http.ResponseWriter, r *http.Request) {
 	claims, has, err := s.claims(r)
 	if !has || err != nil {

@@ -13,3 +13,5 @@
 11. Touch targets >=44px, no horizontal page overflow, focus-visible keyboard outlines, reduced motion and readable glass fallback.
 12. Verify apps/web: npm run lint && npm run icons:check && npm run build. Verify services/api: go test ./... && go vet ./.... Then git diff --check. Commit to dev and confirm Railway latest SHA SUCCESS before claiming deployment.
 13. **Mandatory skill for any frontend change:** read `skills/openedu-ui/SKILL.md`. Keep `CLAUDE.md` consistent with `AGENTS.md`.
+14. Native Flutter is at apps/mobile, with Lucide icons via lucide_icons_flutter, glass panels and secure storage. Never replace Lucide with emoji/Material icon glyphs. Run flutter pub get, flutter test, and an iOS Simulator build on a configured Mac. Android validation is mandatory before declaring Android release.
+15. Treat docs/RELEASE_GATES.md as the canonical checklist for claims of 100% readiness. Do not auto-provision admin credentials or expose the internal Railway API to mobile without security review and approval.

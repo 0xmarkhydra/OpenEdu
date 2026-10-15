@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: OpenEdu Core API
-  version: 0.3.0
+  version: 0.4.0
   description: |
     Licensed library, tenant-isolated school operations, parent portal,
     assignments, attendance and editorial workflows. Source examples and
@@ -602,6 +602,85 @@ paths:
         '401': {description: Unauthorized}
         '403': {description: Forbidden or wrong school}
         '404': {description: Not found or unavailable resource}
+  /v1/auth/password:
+    post:
+      operationId: changeOwnPassword
+      description: Verify current password and atomically revoke all old JWTs by auth_version bump.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_password, new_password]
+              properties:
+                current_password: {type: string}
+                new_password: {type: string, minLength: 12, maxLength: 72}
+      responses:
+        '200': {description: Credential rotated; existing JWTs revoked}
+        '400': {description: Invalid password}
+        '401': {description: Not authenticated or wrong existing password}
+  /v1/me/messages/contacts:
+    get:
+      operationId: listVerifiedMessageContacts
+      description: Only currently assigned teachers and verified guardians in the same class can see each other.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Authorized class-scoped contacts}
+        '403': {description: Role not allowed}
+  /v1/me/messages:
+    get:
+      operationId: listPrivateMessages
+      description: Return only messages of the authenticated user whose channel is still authorized.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Most recent 100 private messages}
+        '403': {description: Role not allowed}
+    post:
+      operationId: sendPrivateMessage
+      description: Verified teacher-guardian relationship for a class is rechecked on every send.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [class_id, recipient_id, content]
+              properties:
+                class_id: {type: string, format: uuid}
+                recipient_id: {type: string, format: uuid}
+                content: {type: string, minLength: 1, maxLength: 2000}
+      responses:
+        '201': {description: Message sent}
+        '403': {description: Recipient not approved in class}
+  /v1/me/messages/{id}/read:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    patch:
+      operationId: markPrivateMessageRead
+      description: Only the currently authorized recipient may mark a message read.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Read receipt saved}
+        '404': {description: Message absent, revoked, or not recipient}
+  /v1/schools/{school}/reports:
+    parameters:
+      - in: path
+        name: school
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getSchoolAggregateReport
+      description: Restricted to principal and school_admin, returns aggregate counts without student names or private messages.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: School summary and class sizes}
+        '403': {description: Forbidden or wrong tenant}
   /health/live:
     get:
       operationId: getLiveness

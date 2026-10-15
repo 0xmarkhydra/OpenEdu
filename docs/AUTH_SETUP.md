@@ -36,7 +36,7 @@ A second bootstrap is prohibited; an existing platform administrator must handle
 
 - Do not onboard actual students/guardians until consent, account recovery, 2FA for administrators, guardian verification, event audit, retention policies, and school-specific privacy tests are complete.
 - For multi-school accounts, login requires a school UUID to select the correct scope.
-- Password reset/change and session revocation lists are not yet implemented; browser logout clears the local cookie, but issued JWTs expire after at most 15 minutes. Account/role revocation is checked directly in the database for every request.
+- Password self-service now implemented at /dashboard/account. Every password change increments users.auth_version atomically, revoking existing JWTs immediately. Password reset by verified email, 2FA and recovery remain unimplemented. Logout clears the browser cookie; otherwise JWTs expire within 15 minutes.
 - School member creation is restricted to platform admins for now; it should transition to verified invitation flows rather than direct password issuance.
 - Configure strict TLS, distributed IP-based login rate limiting, automated credential auditing and secrets rotation before broad public use.
 - Do not copy test users or unlicensed textbook content into production.

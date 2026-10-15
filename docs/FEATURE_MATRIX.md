@@ -5,18 +5,18 @@ Working means automated code checks **and** (where indicated) disposable Postgre
 
 | Area | Implemented in code | Validated | Still missing |
 | --- | --- | --- | --- |
-| Identity & RBAC | Login, bcrypt, short-lived JWT, DB role revalidation, platform admin provisioning, limited failed login attempts | Unit + Postgres | Password reset, 2FA, verified invitations, audit and consent |
+| Identity & RBAC | Login, bcrypt, short-lived JWT, DB role revalidation, self-service password change with immediate JWT revocation, platform admin provisioning, throttling | Unit + Postgres integration | Password reset, 2FA, verified invitations, consent, full audit |
 | Multi-school | Add/list schools, members, academic years, classes, student enrolment and teacher assignment | Postgres | Bulk import, transfers, semester administration, advanced teacher scheduling |
 | Attendance | Teacher records attendance by day, reads class history | Postgres | Mass entry, analytics, guardian alerts |
 | Assignment | Teacher posts assignment, student submits, teacher grades and provides feedback | Postgres | Files, rubrics, timed quizzes, anti-cheat |
 | Leave requests | Student or verified guardian submits, teacher approves/rejects | Postgres | Notification to teachers and calendar linkage |
 | Timetable | Add/update period by weekday and view per authorized class | Postgres | Time collisions, substitute teacher, school-wide schedule |
-| Announcements | Target all/teacher/student/guardian within school | Postgres | Push notifications, read receipts, messaging |
-| Parent portal | Admin-verified guardian links, child scores/attendance, request leave | Postgres | Two-way chat, multi-guardian audits, consent and recovery |
+| Announcements | Target all/teacher/student/guardian within school | Postgres | Push notifications, per-announcement read receipts |
+| Parent portal | Verified guardian links, child scores/attendance, leave, secure two-way messaging with assigned teacher/read receipts | Postgres integration | Multi-guardian audit and consent/recovery procedures, mobile parent detail workflows |
 | Licensed library | Catalog, chapter/lesson editor, text reader, publication lifecycle | PostgreSQL integration + local Next.js build | PDF/media upload, bookmark/progress, offline rights, legal license verification |
 | Web UX | Public catalog, login, platform admin, school dashboard, iOS-style Liquid Glass responsive UI | Next.js build | Safari device visual QA, accessibility audit |
-| Mobile | Responsive web | Web build | Native Flutter iOS/Android application |
-| Infrastructure | Go API, PostgreSQL migrations, Railway services and branch-based deployments | Verified baseline | Backups drill, monitoring alerts, signed media URLs, production load/security review |
+| Mobile | Flutter native library/search, lesson text reader, login with secure storage, classes, announcements and messaging | Flutter widget tests + iOS Simulator compile | Mobile HTTPS API publication, Android SDK build, App Store/Play review, complete role features |
+| Infrastructure | Go API, PostgreSQL append-only migrations, versioned JWT revocation, Railway GitHub dev deployments | Verified baseline + local Postgres tests | Backups drill, monitoring alerts, signed media URLs, production load/security review |
 
 Live student/guardian information must not be entered until privacy and compliance review is complete. Do not seed unlicensed textbooks. This file must be updated after each milestone, including any failing tests or deployment issues.
 

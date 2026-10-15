@@ -52,7 +52,8 @@ func (i *Identity) Login(ctx context.Context, email, password, schoolID string) 
 		return out, ErrLoginLimited
 	}
 	var userID, hash string
-	err = i.db.QueryRowContext(ctx, `SELECT u.id::text,c.password_hash FROM users u JOIN user_credentials c ON c.user_id=u.id WHERE lower(u.email)=$1 AND u.status='active'`, email).Scan(&userID, &hash)
+	var authVersion int64
+	err = i.db.QueryRowContext(ctx, `SELECT u.id::text,c.password_hash,u.auth_version FROM users u JOIN user_credentials c ON c.user_id=u.id WHERE lower(u.email)=$1 AND u.status='active'`, email).Scan(&userID, &hash, &authVersion)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return out, err
 	}
@@ -70,7 +71,7 @@ func (i *Identity) Login(ctx context.Context, email, password, schoolID string) 
 		return out, err
 	}
 	_, _ = i.db.ExecContext(ctx, "DELETE FROM login_failures WHERE key=$1", key)
-	claims := Claims{Subject: userID, SchoolID: selected, Roles: roles}
+	claims := Claims{Subject: userID, SchoolID: selected, Roles: roles, AuthVersion: authVersion}
 	token, err := i.verifier.Issue(claims, 15*time.Minute)
 	if err != nil {
 		return out, err
@@ -125,7 +126,8 @@ func (i *Identity) rolesFor(ctx context.Context, userID, schoolID string) ([]str
 // Every protected read/write checks both active user and active tenant roles.
 func (i *Identity) ValidPrincipal(ctx context.Context, c Claims) bool {
 	var active bool
-	if err := i.db.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM users WHERE id=$1::uuid AND status='active')`, c.Subject).Scan(&active); err != nil || !active {
+	var version int64
+	if err := i.db.QueryRowContext(ctx, `SELECT status='active',auth_version FROM users WHERE id=$1::uuid`, c.Subject).Scan(&active, &version); err != nil || !active || c.AuthVersion != version {
 		return false
 	}
 	if c.SchoolID == "" {

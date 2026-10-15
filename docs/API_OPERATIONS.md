@@ -62,3 +62,14 @@ Public readers can request `GET /v1/books/{id}/outline` and `GET /v1/lessons/{id
 ## Validation and rollout
 
 Automated Go auth tests plus disposable PostgreSQL integration tests cover school operations, guardian authorization, assignment flow, attendance, submission/grade, text reader, and publication state transitions. Frontend is built with Next.js production compiler. These are necessary but not sufficient for handling real minors' data. See `docs/FEATURE_MATRIX.md`, `docs/AUTH_SETUP.md`, and `docs/RAILWAY_DEPLOY.md`.
+
+## v0.4 school communication, reporting and account security
+
+- `GET /v1/me/messages/contacts`: returns contacts only where class assignment, active teacher/guardian memberships, verified child link and enrollment all hold.
+- `GET /v1/me/messages`: lists last 100 current-user messages only when relationship remains valid.
+- `POST /v1/me/messages`: JSON `{"class_id":"UUID","recipient_id":"UUID","content":"Nội dung"}`; server checks verified relationship twice, never trusts claimed role/school headers.
+- `PATCH /v1/me/messages/{id}/read`: recipient-only read receipt.
+- `GET /v1/schools/{school}/reports`: principal/school_admin-only school aggregate report, no personal student content.
+- `POST /v1/auth/password`: `{"current_password":"...","new_password":"..."}` under existing Bearer JWT, rotates password, increments users.auth_version atomically, invalidates old tokens. Web `/dashboard/account` clears the HttpOnly cookie on success.
+
+Database changes are additive migrations 0004_messaging and 0005_auth_version; previous schemas are retained. Security events log password changes without contents or raw credentials. Private message content is sensitive educational communication: production retention/access/deletion policy remains a release gate. For native application setup see `apps/mobile/README.md`.

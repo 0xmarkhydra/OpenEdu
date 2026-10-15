@@ -200,4 +200,41 @@ VALUES($1::uuid,'Integration Test Book',5,'test','test owner','test-only','test 
 		t.Fatalf("school role escaped to platform admin: %d", denied.StatusCode)
 	}
 
+	// Password changes revoke all issued sessions, and failed current-password
+	// attempts do not change stored credential material.
+	oldToken := member.AccessToken
+	wrong := authPost("/v1/auth/password", map[string]string{"current_password": "wrong password", "new_password": "new-strong-password-2026"}, oldToken)
+	wrong.Body.Close()
+	if wrong.StatusCode != 401 {
+		t.Fatalf("wrong old password accepted: %d", wrong.StatusCode)
+	}
+	changed := authPost("/v1/auth/password", map[string]string{"current_password": "member-password-2026", "new_password": "new-strong-password-2026"}, oldToken)
+	changed.Body.Close()
+	if changed.StatusCode != 200 {
+		t.Fatalf("password change rejected: %d", changed.StatusCode)
+	}
+	meReq, err := http.NewRequest("GET", server.URL+"/v1/auth/me", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	meReq.Header.Set("Authorization", "Bearer "+oldToken)
+	revoked, err := http.DefaultClient.Do(meReq)
+	if err != nil {
+		t.Fatal(err)
+	}
+	revoked.Body.Close()
+	if revoked.StatusCode != 401 {
+		t.Fatalf("old token still valid after password change: %d", revoked.StatusCode)
+	}
+	stale := post("/v1/auth/login", map[string]string{"email": newMemberEmail, "password": "member-password-2026", "school_id": created.ID})
+	stale.Body.Close()
+	if stale.StatusCode != 401 {
+		t.Fatalf("old password was accepted: %d", stale.StatusCode)
+	}
+	fresh := post("/v1/auth/login", map[string]string{"email": newMemberEmail, "password": "new-strong-password-2026", "school_id": created.ID})
+	fresh.Body.Close()
+	if fresh.StatusCode != 200 {
+		t.Fatalf("new password not accepted: %d", fresh.StatusCode)
+	}
+
 }

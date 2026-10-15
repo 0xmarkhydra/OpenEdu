@@ -4,7 +4,7 @@ import Link from "next/link";
 import AdminPanel from "./panel";
 import SchoolPanel from "./school-panel";
 import ParentPanel from "./parent-panel";
-import { ArrowLeft, BookOpen, LogOut } from "lucide-react";
+import { ArrowLeft, BookOpen, LogOut, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Profile={user_id:string;school_id?:string;roles:string[]};
@@ -29,7 +29,7 @@ export default async function DashboardPage(){
   return <section className="container dashboard">
     <div className="dashboard-top">
       <div><span className="eyebrow section-eyebrow">OPENEDU WORKSPACE</span><h1>Trung tâm quản trị</h1><p>Vai trò: <strong>{profile.roles.join(", ")}</strong>{profile.school_id && <> · Trường: {profile.school_id}</>}</p></div>
-      <div className="dashboard-tools"><Link className="back" href="/"><ArrowLeft size={16} aria-hidden="true"/>Thư viện</Link>{profile.roles.some(r=>["platform_admin","school_admin","content_admin","content_reviewer"].includes(r))&&<Link className="back" href="/dashboard/content"><BookOpen size={16} aria-hidden="true"/>Quản trị học liệu</Link>}<form action="/api/auth/logout" method="post"><LogoutButton/></form></div>
+      <div className="dashboard-tools"><Link href="/dashboard/account" className="back"><KeyRound size={16} aria-hidden="true"/>Tài khoản</Link><Link className="back" href="/"><ArrowLeft size={16} aria-hidden="true"/>Thư viện</Link>{profile.roles.some(r=>["platform_admin","school_admin","content_admin","content_reviewer"].includes(r))&&<Link className="back" href="/dashboard/content"><BookOpen size={16} aria-hidden="true"/>Quản trị học liệu</Link>}<form action="/api/auth/logout" method="post"><LogoutButton/></form></div>
     </div>
     {isPlatform ? <AdminPanel initialSchools={data?.items||[]}/> : profile.school_id ? profile.roles.includes("guardian") && !profile.roles.some(r=>["school_admin","principal","teacher","student"].includes(r)) ? <ParentPanel/> : <SchoolPanel schoolId={profile.school_id} userRoles={profile.roles}/> : <div className="empty-state"><h3>Chưa có trường liên kết</h3><p>Liên hệ quản trị viên để được cấp quyền truy cập trường học.</p></div>}
   </section>;

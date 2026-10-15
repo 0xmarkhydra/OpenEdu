@@ -2,6 +2,7 @@
 import { FormEvent,useEffect,useState } from "react";
 import { ClipboardCheck, GraduationCap, HeartHandshake, CalendarClock, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import MessagesPanel from "./messages-panel";
 type Child={student_id:string;name:string;class_id:string;class_name:string};
 type Grade={title:string;class_name:string;grade:number|null;feedback:string;submitted_at:string};
 type Attendance={date:string;status:string;class_name:string;note:string};
@@ -72,5 +73,6 @@ export default function ParentPanel(){
     </form>
    </section>}
   </div>}
+  <MessagesPanel/>
  </section>;
 }
