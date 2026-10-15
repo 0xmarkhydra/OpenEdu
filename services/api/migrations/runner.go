@@ -26,7 +26,7 @@ func Apply(ctx context.Context, db *sql.DB) error {
 	if _, err := tx.ExecContext(ctx, "CREATE TABLE IF NOT EXISTS schema_migrations (version text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())"); err != nil {
 		return fmt.Errorf("migration ledger: %w", err)
 	}
-	for _, version := range []string{"0001_initial", "0002_identity", "0003_school_operations", "0004_messaging", "0005_auth_version"} {
+	for _, version := range []string{"0001_initial", "0002_identity", "0003_school_operations", "0004_messaging", "0005_auth_version", "0006_reader_progress"} {
 		var done bool
 		if err := tx.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM schema_migrations WHERE version=$1)", version).Scan(&done); err != nil {
 			return err

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: OpenEdu Core API
-  version: 0.4.0
+  version: 0.5.0
   description: |
     Licensed library, tenant-isolated school operations, parent portal,
     assignments, attendance and editorial workflows. Source examples and
@@ -681,6 +681,46 @@ paths:
       responses:
         '200': {description: School summary and class sizes}
         '403': {description: Forbidden or wrong tenant}
+  /v1/books/{id}/progress:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getPersonalBookProgress
+      description: Returns current authenticated user's completion and bookmark state for visible published lessons only.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Personal progress for chapters in an accessible published book}
+        '401': {description: Sign-in required}
+        '404': {description: Book not published or not visible to school}
+  /v1/lessons/{id}/progress:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    put:
+      operationId: savePersonalLessonProgress
+      description: Upsert completion and bookmark flags scoped to authenticated user and currently published allowed book.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [completed, bookmarked]
+              additionalProperties: false
+              properties:
+                completed: {type: boolean}
+                bookmarked: {type: boolean}
+      responses:
+        '200': {description: Saved personal progress}
+        '400': {description: Invalid lesson or request body}
+        '401': {description: Sign-in required}
+        '404': {description: Lesson not published or not visible to school}
   /health/live:
     get:
       operationId: getLiveness

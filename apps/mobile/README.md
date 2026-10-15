@@ -30,3 +30,7 @@ Never embed passwords, JWT secrets, private Railway URLs, database credentials o
 - Flutter tests and unsigned iOS Simulator build pass on Mac. Android SDK is **missing** on the current development host; Android build and Play Store acceptance are unverified.
 - `flutter analyze` encountered a Dart analysis-server process error on this host despite successful widget tests and Xcode Simulator build. Investigate Flutter SDK state or run static analysis on CI with a clean SDK before merging to main.
 - Compliance for minors, guardian verification, app privacy disclosures and production onboarding are required before storing real student records.
+
+## Personal lesson bookmarks and progress
+
+Open a published text lesson from the library, then use `Lưu bài` or `Đánh dấu đã học` in the native lesson dialog. Both flags are sent to the Go API over authenticated HTTPS; they are not persisted in plaintext on the phone. Guests can still read *public* permitted text but cannot save personal progress. School-only lessons require an active logged-in session, independent of the saved state.

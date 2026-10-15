@@ -4,7 +4,7 @@
 - Private classroom messaging between verified guardian and assigned teacher, available on web; message contacts, send/list and read receipts. Revoking guardian link immediately hides historical messages.
 - Authenticated password rotation, bcrypt update, incrementing DB auth_version in the same transaction, immediate rejection of old JWT sessions and a minimal account security event.
 - Aggregate school report for leadership only (attendance records, class sizes, assignments, submissions, pending leave). No export of student personal information.
-- Flutter iOS/Android project with public permitted-library browsing, lesson text, JWT login via secure device storage, class/announcement viewing, private-message compose and reading; initial Flutter widget tests and unsigned iOS Simulator build passed.
+- Flutter iOS/Android project with permitted-library browsing, lesson text, per-account bookmark/completion, JWT login via secure device storage, class/announcement viewing, private-message compose and reading; Flutter widget tests and unsigned iOS Simulator build previously passed; revalidate iOS compilation for each reader change.
 - Go integration tests run against a disposable PostgreSQL test database; Next.js TypeScript, icon scan and production build checked.
 
 ## Still blocking full completion

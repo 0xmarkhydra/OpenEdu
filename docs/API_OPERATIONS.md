@@ -73,3 +73,15 @@ Automated Go auth tests plus disposable PostgreSQL integration tests cover schoo
 - `POST /v1/auth/password`: `{"current_password":"...","new_password":"..."}` under existing Bearer JWT, rotates password, increments users.auth_version atomically, invalidates old tokens. Web `/dashboard/account` clears the HttpOnly cookie on success.
 
 Database changes are additive migrations 0004_messaging and 0005_auth_version; previous schemas are retained. Security events log password changes without contents or raw credentials. Private message content is sensitive educational communication: production retention/access/deletion policy remains a release gate. For native application setup see `apps/mobile/README.md`.
+
+## Personal reading progress (v0.5)
+
+Signed-in readers may save their own progress for any *published* lesson that their live account/school membership can open. Historical progress does not grant rights to re-open unpublished or archived material.
+
+- `GET /v1/books/{id}/progress` returns `{"items":[{"lesson_id":"UUID","completed":true,"bookmarked":true,"last_opened_at":"timestamp"}]}` only for the authenticated user, only when the book is visible/published.
+- `PUT /v1/lessons/{id}/progress` with `{"completed":true,"bookmarked":false}` upserts just the current user's flags. Both booleans are required by the API contract and client. There is no student ID parameter.
+- Browser UX: signed-in reader has `Lưu bài học` and `Đánh dấu đã học` actions and book-level completed count. Anonymous visitors can read public lessons but cannot write reading state.
+- Flutter: the lesson dialog shares these API calls and secure on-device session state. Progress lives in PostgreSQL and stays consistent across devices after login.
+- Migration: append-only `0006_reader_progress.sql`. Archived/restricted lessons return 404, progress belonging to different users is not readable; cross-school writes are rejected.
+
+Reminder: no PDF/offline access, analytics, consent audit, or school-wide progress tracking is implied by personal reading progress.

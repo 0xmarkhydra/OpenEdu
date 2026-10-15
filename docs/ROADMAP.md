@@ -23,7 +23,8 @@ The linked Notion document is a proposal pending customer approval.
 - [x] Tenant-scoped role checks and verified parent-child relationships
 - [ ] Full RBAC role-matrix audit and consent verification
 - [x] Text chapter/lesson reader with school-publication scope, safe text rendering
-- [ ] PDF reader, bookmarks, progress, offline rights
+- [x] Per-user bookmark and completion progress for licensed published text lessons (web + Flutter)
+- [ ] PDF reader, offline rights, cross-device progress analytics
 - [x] Assignments, text submission, grading and feedback
 - [ ] File attachments, timed exams, question bank
 - [x] Class attendance and student/verified-parent leave request approval

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'core/api.dart';
+import 'features/reading/lesson_dialog.dart';
 
 const ink = Color(0xFF1A2E54);
 const blue = Color(0xFF4B80EF);
@@ -222,10 +223,10 @@ class _OpenEduHomeState extends State<OpenEduHome> {
                   try{
                     final content=await api.request('GET','/v1/lessons/${lesson['id']}');
                     if(!sheet.mounted)return;
-                    await showDialog<void>(context:sheet,builder:(dialog)=>AlertDialog(
-                      title:Text(content['title']?.toString()??'Bài học'),
-                      content:SingleChildScrollView(child:SelectableText(content['content']?.toString()??'')),
-                      actions:[TextButton(onPressed:()=>Navigator.pop(dialog),child:const Text('Đóng'))]));
+                    await showDialog<void>(context:sheet,builder:(dialog)=>LessonDialog(
+                      api:api,bookId:id,lessonId:lesson['id'].toString(),
+                      title:content['title']?.toString()??'Bài học',
+                      content:content['content']?.toString()??''));
                   }catch(e){if(sheet.mounted)ScaffoldMessenger.of(sheet).showSnackBar(SnackBar(content:Text(e.toString())));}
                 }),
           ],

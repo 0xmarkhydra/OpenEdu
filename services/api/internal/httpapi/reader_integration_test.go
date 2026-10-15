@@ -123,8 +123,78 @@ func TestEditorialReaderPublishingPostgres(t *testing.T) {
 	if content["content"] != "Synthetic educational content only." {
 		t.Fatalf("lesson: %+v", content)
 	}
+	lessonID := lesson["id"].(string)
+	status, emptyProgress := request("student", "GET", "/v1/books/"+bookID+"/progress", nil)
+	check(200, status, emptyProgress)
+	if len(emptyProgress["items"].([]any)) != 0 {
+		t.Fatal("unexpected initial reading progress")
+	}
+	status, save := request("student", "PUT", "/v1/lessons/"+lessonID+"/progress", map[string]any{"completed": true, "bookmarked": true})
+	check(200, status, save)
+	if save["completed"] != true || save["bookmarked"] != true {
+		t.Fatalf("reading progress not saved: %+v", save)
+	}
+	status, saved := request("student", "GET", "/v1/books/"+bookID+"/progress", nil)
+	check(200, status, saved)
+	if len(saved["items"].([]any)) != 1 {
+		t.Fatalf("personal reading progress missing: %+v", saved)
+	}
+	status, _ = request("student", "PUT", "/v1/lessons/"+lessonID+"/progress", map[string]any{"completed": false, "bookmarked": true})
+	check(200, status, nil)
+	status, saved = request("student", "GET", "/v1/books/"+bookID+"/progress", nil)
+	check(200, status, saved)
+	record := saved["items"].([]any)[0].(map[string]any)
+	if record["completed"] != false || record["bookmarked"] != true {
+		t.Fatalf("reading status not updated: %+v", record)
+	}
+	status, _ = request("", "PUT", "/v1/lessons/"+lessonID+"/progress", map[string]any{"completed": true, "bookmarked": false})
+	check(401, status, nil)
+	status, _ = request("", "GET", "/v1/books/"+bookID+"/progress", nil)
+	check(401, status, nil)
+	var another string
+	if err := db.QueryRowContext(ctx, "INSERT INTO users(email,display_name) VALUES($1,$2) RETURNING id::text", "other-"+suffix+"@example.test", "Other Reader").Scan(&another); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.ExecContext(ctx, "INSERT INTO school_memberships(school_id,user_id,role) VALUES($1::uuid,$2::uuid,'student')", school, another); err != nil {
+		t.Fatal(err)
+	}
+	anotherToken, err := verifier.Issue(auth.Claims{Subject: another, SchoolID: school, Roles: []string{"student"}}, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tokens["other"] = anotherToken
+	status, otherProgress := request("other", "GET", "/v1/books/"+bookID+"/progress", nil)
+	check(200, status, otherProgress)
+	if len(otherProgress["items"].([]any)) != 0 {
+		t.Fatalf("another user's progress leaked: %+v", otherProgress)
+	}
+	var foreignSchool, foreignUser string
+	if err := db.QueryRowContext(ctx, "INSERT INTO schools(name,slug) VALUES('Unrelated School',$1) RETURNING id::text", "foreign-"+suffix).Scan(&foreignSchool); err != nil {
+		t.Fatal(err)
+	}
+	if err := db.QueryRowContext(ctx, "INSERT INTO users(email,display_name) VALUES($1,$2) RETURNING id::text", "foreign-"+suffix+"@example.test", "Foreign Reader").Scan(&foreignUser); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.ExecContext(ctx, "INSERT INTO school_memberships(school_id,user_id,role) VALUES($1::uuid,$2::uuid,'student')", foreignSchool, foreignUser); err != nil {
+		t.Fatal(err)
+	}
+	tokens["foreign"], err = verifier.Issue(auth.Claims{Subject: foreignUser, SchoolID: foreignSchool, Roles: []string{"student"}}, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	status, _ = request("foreign", "GET", "/v1/books/"+bookID+"/progress", nil)
+	check(404, status, nil)
+	status, _ = request("foreign", "PUT", "/v1/lessons/"+lessonID+"/progress", map[string]any{"completed": true, "bookmarked": true})
+	check(404, status, nil)
 	status, _ = request("", "GET", "/v1/lessons/"+lesson["id"].(string), nil)
 	check(404, status, nil)
 	status, _ = request("school_admin", "POST", "/v1/admin/books/"+bookID+"/chapters", map[string]any{"title": "Should fail", "position": 2})
 	check(409, status, nil)
+	status, _ = request("school_admin", "POST", "/v1/admin/books/"+bookID+"/archive", map[string]any{})
+	check(200, status, nil)
+	status, _ = request("student", "GET", "/v1/books/"+bookID+"/progress", nil)
+	check(404, status, nil)
+	status, _ = request("student", "PUT", "/v1/lessons/"+lessonID+"/progress", map[string]any{"completed": true, "bookmarked": true})
+	check(404, status, nil)
+
 }

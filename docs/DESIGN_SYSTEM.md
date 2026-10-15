@@ -44,3 +44,7 @@ Use these CSS classes consistently; do not add conflicting gradients or random i
 ### Additional validation required
 
 Visual QA on mobile Safari and desktop Safari, keyboard audits, low-power GPU sampling, accessibility contrast audit, real user tests and a real iOS Flutter design system are still outstanding.
+
+## Lesson reader interaction
+
+Authenticated readers have clearly labeled **BookmarkCheck / Bookmark** and **CheckCheck / CheckCircle2** actions, with useful disabled/busy/error states and screen-readable text. The book outline shows completed count and per-lesson markers, never just color. Keep guest reader and school-only content access separated. Native Flutter reader uses the matching Lucide symbols via `lucide_icons_flutter`, with backend progress persistence.

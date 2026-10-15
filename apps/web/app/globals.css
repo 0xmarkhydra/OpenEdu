@@ -112,3 +112,12 @@ html{color-scheme:light}body{font-family:-apple-system,BlinkMacSystemFont,"SF Pr
 .messages-compose textarea{resize:vertical;min-height:90px}.messages-compose-actions{display:flex;gap:16px;align-items:center;justify-content:space-between}
 .messages-compose-actions small{color:#8292ab}
 @media(max-width:600px){.messages-thread{padding:12px}.message-bubble{max-width:96%}}
+/* Authenticated per-lesson study progress */
+.reader-actions{margin-top:28px;padding:20px;border:1px solid #dbe6fa;background:linear-gradient(135deg,#f6faffed,#eef2ffdd);border-radius:20px;display:grid;gap:11px}
+.reader-actions>p{margin:0;color:#586f9b}
+.reader-action-buttons{display:flex;gap:12px;flex-wrap:wrap}
+.reader-action-buttons .ui-button{min-height:46px}
+.reader-status{display:inline-flex;align-items:center;gap:8px;color:#365fb7;font-weight:700}
+.book-progress{display:inline-flex;align-items:center;gap:9px;background:#eaf0ff;color:#345ac7;border:1px solid #d4e1ff;border-radius:12px;padding:10px 14px;font-size:14px;font-weight:700;margin-bottom:22px}
+.reading-markers{display:inline-flex;align-items:center;gap:10px;flex-shrink:0;color:#5675d8}
+@media(max-width:650px){.reader-action-buttons .ui-button{width:100%}}

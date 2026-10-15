@@ -74,6 +74,8 @@ func New(store catalog.Store, verifier *auth.Verifier, db *sql.DB) http.Handler 
 	mux.HandleFunc("GET /v1/me/children/{student}/grades", s.childGrades)
 	mux.HandleFunc("POST /v1/me/children/{student}/leave", s.childLeave)
 	mux.HandleFunc("GET /v1/books/{id}/outline", s.outline)
+	mux.HandleFunc("GET /v1/books/{id}/progress", s.bookProgress)
+	mux.HandleFunc("PUT /v1/lessons/{id}/progress", s.lessonProgress)
 	mux.HandleFunc("GET /v1/lessons/{id}", s.lessonContent)
 	mux.HandleFunc("POST /v1/admin/books/{id}/chapters", s.createChapter)
 	mux.HandleFunc("POST /v1/admin/chapters/{id}/lessons", s.createLesson)
