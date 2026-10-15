@@ -7,12 +7,12 @@ Status legend: IMPLEMENTED = executable and tested; FOUNDATION = meaningful code
 | Go API and PostgreSQL schema | FOUNDATION | Railway Docker build succeeded; startup migration applied and /health/ready succeeded; Go tests and vet passed |
 | Identity/login | FOUNDATION | Go login + bcrypt, JWT issuance, DB role revocation and HTTP-only web cookie tested locally; first production admin not provisioned, recovery/2FA pending |
 | Tenant-safe library catalog | FOUNDATION | published listing and basic mutation, more tests needed |
-| School management and RBAC | FOUNDATION | Platform school CRUD/list and member provisioning implemented; PostgreSQL integration tests pass; production rollout pending |
-| Books/PDF reader | PLANNED | rights and object delivery not implemented |
-| Learning/assignments/grading | PLANNED | not implemented |
-| Attendance and leave | PLANNED | not implemented |
-| Communication and notifications | PLANNED | not implemented |
-| Web library foundation | FOUNDATION | Next.js production build succeeded locally and on Railway; public HTTPS returns 200; catalog shows correct empty state (no licensed books loaded) |
+| School management and RBAC | FOUNDATION | school/year/class/roster/teacher/timetable APIs and dashboards, guardian verification and scoped access tested; bulk import and audit pending |
+| Text lesson reader and editorial CMS | FOUNDATION | chapter/lesson authoring, moderation and safe JSON-backed text reader pass PostgreSQL integration; PDF/object delivery and licensing review remain pending |
+| Learning/assignments/grading | FOUNDATION | teacher assignments, submissions, scores and feedback pass disposable PostgreSQL tests; file attachments, exams/rubrics missing |
+| Attendance and leave | FOUNDATION | teacher attendance, student and verified guardian leave request, approval/rejection pass PostgreSQL integration |
+| Communication and notifications | FOUNDATION | targeted school announcements implemented and tested; chat, push, survey and receipts missing |
+| Web portal / iOS glass design | FOUNDATION | responsive public library, lesson reader, login, admin/CMS, teacher/student/guardian pages build locally; Safari device QA and production deployment pending |
 | Flutter mobile | PLANNED | not implemented |
 | Production security and load testing | PLANNED | not validated |
 

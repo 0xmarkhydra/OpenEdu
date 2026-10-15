@@ -1,10 +1,11 @@
 openapi: 3.0.3
 info:
-  title: FreeEducation Core API
-  version: 0.2.0
+  title: OpenEdu Core API
+  version: 0.3.0
   description: |
-    Initial public catalog and protected editorial endpoints.
-    Auth issuer and login are separate planned capabilities.
+    Licensed library, tenant-isolated school operations, parent portal,
+    assignments, attendance and editorial workflows. Source examples and
+    access restrictions: docs/API_OPERATIONS.md.
 servers:
   - url: http://localhost:8080
 paths:
@@ -88,6 +89,519 @@ paths:
         '201': {description: Member added to selected school}
         '403': {description: Forbidden}
         '409': {description: Existing account must use an invitation flow}
+  /v1/schools/{school}/years:
+    parameters:
+      - in: path
+        name: school
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: listAcademicYears
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    post:
+      operationId: createAcademicYear
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/schools/{school}/classes:
+    parameters:
+      - in: path
+        name: school
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: listVisibleClasses
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    post:
+      operationId: createClass
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/schools/{school}/announcements:
+    parameters:
+      - in: path
+        name: school
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: listSchoolAnnouncements
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    post:
+      operationId: publishSchoolAnnouncement
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/schools/{school}/overview:
+    parameters:
+      - in: path
+        name: school
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getSchoolOverview
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/schools/{school}/guardians:
+    parameters:
+      - in: path
+        name: school
+        required: true
+        schema: {type: string, format: uuid}
+    post:
+      operationId: verifyGuardianRelationship
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/classes/{id}/students:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getClassRoster
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    post:
+      operationId: enrollClassStudent
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/classes/{id}/teachers:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    post:
+      operationId: assignClassTeacher
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/classes/{id}/attendance:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getClassAttendance
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    put:
+      operationId: saveStudentAttendance
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/classes/{id}/assignments:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: listClassAssignments
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    post:
+      operationId: createClassAssignment
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/classes/{id}/timetable:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getClassTimetable
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    post:
+      operationId: upsertTimetablePeriod
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/classes/{id}/leave-requests:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: listClassLeaveRequests
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    post:
+      operationId: requestClassLeave
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    patch:
+      operationId: reviewClassLeave
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/assignments/{id}/submissions:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: listAuthorizedSubmissions
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    post:
+      operationId: submitAssignment
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    patch:
+      operationId: gradeAssignmentSubmission
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/me/children:
+    get:
+      operationId: listVerifiedChildren
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/me/children/{student}/attendance:
+    parameters:
+      - in: path
+        name: student
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getChildAttendance
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/me/children/{student}/grades:
+    parameters:
+      - in: path
+        name: student
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getChildGrades
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/me/children/{student}/leave:
+    parameters:
+      - in: path
+        name: student
+        required: true
+        schema: {type: string, format: uuid}
+    post:
+      operationId: submitGuardianLeaveRequest
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/books/{id}/outline:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getPublishedBookOutline
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/lessons/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: readLicensedLesson
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/admin/books/{id}/chapters:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getDraftBookOutline
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+    post:
+      operationId: createDraftChapter
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
+  /v1/admin/chapters/{id}/lessons:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    post:
+      operationId: createDraftLesson
+      description: Scoped OpenEdu operation; see docs/API_OPERATIONS.md for payloads, permissions and examples.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object}
+      responses:
+        '201': {description: Successful operation or resource representation}
+        '400': {description: Invalid input}
+        '401': {description: Unauthorized}
+        '403': {description: Forbidden or wrong school}
+        '404': {description: Not found or unavailable resource}
   /health/live:
     get:
       operationId: getLiveness
@@ -162,6 +676,13 @@ paths:
         '404':
           description: Unknown or inaccessible book.
   /v1/admin/books:
+    get:
+      operationId: listEditorialBooks
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Draft and published books visible to the editor}
+        '401': {description: Authentication required}
+        '403': {description: Editor role required}
     post:
       operationId: createBookDraft
       security:

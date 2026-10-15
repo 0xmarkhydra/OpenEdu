@@ -25,7 +25,7 @@ The bootstrap binary is compiled into the API image but is NEVER run automatical
 Then run from a trusted authenticated Railway CLI terminal:
 
 ```sh
-railway ssh --service api /freeeducation-bootstrap
+railway ssh --service api /openedu-bootstrap
 ```
 
 It refuses to run if any platform administrator already exists. It uses a transaction and PostgreSQL advisory lock. **Immediately delete** both BOOTSTRAP_ADMIN_EMAIL and BOOTSTRAP_ADMIN_PASSWORD from Railway service settings after successful provisioning; do not paste them into Git, issue trackers, or shell history. Sign in at `/login`, then create a school and its school-admin account at `/dashboard`.

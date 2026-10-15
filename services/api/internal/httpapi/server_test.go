@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/0xmarkhydra/FreeEducation/services/api/internal/auth"
-	"github.com/0xmarkhydra/FreeEducation/services/api/internal/catalog"
+	"github.com/0xmarkhydra/OpenEdu/services/api/internal/auth"
+	"github.com/0xmarkhydra/OpenEdu/services/api/internal/catalog"
 )
 
 const secret = "00000000000000000000000000000000"

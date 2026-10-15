@@ -1,4 +1,4 @@
-# FreeEducation Core
+# OpenEdu Core
 
 Scalable education platform: licensed digital library, assessment, student/teacher portals and school-family communication.
 
@@ -9,7 +9,7 @@ Scalable education platform: licensed digital library, assessment, student/teach
 - Public web: https://web-production-e29d5.up.railway.app/
 - Railway project: https://railway.com/project/f4589b3e-ba78-49a6-917a-08ba27b1f77b
 - GitHub deployments track branch `dev`; `api` is private inside the Railway project. See `docs/RAILWAY_DEPLOY.md` for verified status.
-- The catalog intentionally starts empty until legally licensed resources have been approved and published. Student, school admin and parent flows are not launched yet.
+- The catalog intentionally starts empty until legally licensed resources are approved and published. Web login, school operations, parent portal and text lesson reader are implemented in code; **operator provisioning, privacy review and a verified new production release** are required before real student use.
 
 ## Architecture
 Go 1.26 HTTP API, PostgreSQL 16, Next.js/TypeScript web, planned Flutter mobile, S3 object storage for licensed files. Modular-monolith first with extraction-ready contexts. See docs/ARCHITECTURE.md and docs/PROJECT_STATUS.md.
@@ -23,9 +23,9 @@ Go 1.26 HTTP API, PostgreSQL 16, Next.js/TypeScript web, planned Flutter mobile,
 - Web: cd apps/web && npm install && npm run dev (http://localhost:3000). The web app renders real published catalog API data, never fabricated textbook records.
 - API contract: packages/contracts/openapi.yaml
 - Identity + school management: /login and /dashboard, see docs/AUTH_SETUP.md. No default admin exists; it requires explicit one-time operator provisioning.
-- Docker images: services/api/Dockerfile and apps/web/Dockerfile; web dependency lockfile and CI build still pending.
+- Docker images: services/api/Dockerfile and apps/web/Dockerfile; Next.js production build and lockfile exist. See docs/FEATURE_MATRIX.md and docs/DESIGN_SYSTEM.md.
 
-The public catalog only serves published public books. Privileged operations require a verified JWT from a trusted issuer. Identity login / issuing production tokens is NOT implemented in this initial slice.
+The public catalog serves published licensed public books. School-scoped books are accessible only with verified school membership. Identity login issues short-lived tokens with live role revocation. No account is auto-created in production.
 
 ## Safety
 No default passwords. Do not commit student information, textbook PDFs, license keys or private env vars. School authorization must be enforced at query and application layers.

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/0xmarkhydra/FreeEducation/services/api/internal/auth"
+	"github.com/0xmarkhydra/OpenEdu/services/api/internal/auth"
 )
 
 type LoginRequest struct {

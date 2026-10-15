@@ -1,4 +1,4 @@
-module github.com/0xmarkhydra/FreeEducation/services/api
+module github.com/0xmarkhydra/OpenEdu/services/api
 
 go 1.26.0
 

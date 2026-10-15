@@ -1,4 +1,4 @@
-# FreeEducation development instructions
+# OpenEdu development instructions
 
 1. Client-review Notion document is proposed scope; never claim client acceptance without confirmation.
 2. Work on dev. Commit only verified changes; never force push, override others, or merge untested code into main.

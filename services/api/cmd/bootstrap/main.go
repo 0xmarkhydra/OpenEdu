@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/0xmarkhydra/FreeEducation/services/api/internal/auth"
-	"github.com/0xmarkhydra/FreeEducation/services/api/migrations"
+	"github.com/0xmarkhydra/OpenEdu/services/api/internal/auth"
+	"github.com/0xmarkhydra/OpenEdu/services/api/migrations"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 

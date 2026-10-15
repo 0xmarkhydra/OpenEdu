@@ -44,7 +44,7 @@ export default async function LibraryPage({
     <>
       <section className="hero">
         <div className="container hero-inner">
-          <span className="eyebrow">FREE EDUCATION CORE</span>
+          <span className="eyebrow">OPENEDU • NỀN TẢNG HỌC TẬP</span>
           <h1>Kho tri thức mở ra<br /><span>mỗi ngày học mới.</span></h1>
           <p>Khám phá sách và bài học được phép phân phối — tìm đúng nội dung phù hợp với lớp và môn học của bạn.</p>
           <form className="search-panel" action="/" method="get" role="search">

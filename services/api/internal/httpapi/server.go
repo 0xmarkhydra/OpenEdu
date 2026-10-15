@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/0xmarkhydra/FreeEducation/services/api/internal/auth"
-	"github.com/0xmarkhydra/FreeEducation/services/api/internal/catalog"
+	"github.com/0xmarkhydra/OpenEdu/services/api/internal/auth"
+	"github.com/0xmarkhydra/OpenEdu/services/api/internal/catalog"
 )
 
 var validID = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
@@ -40,8 +40,41 @@ func New(store catalog.Store, verifier *auth.Verifier, db *sql.DB) http.Handler 
 	mux.HandleFunc("GET /v1/admin/schools", s.schools)
 	mux.HandleFunc("POST /v1/admin/schools", s.schools)
 	mux.HandleFunc("POST /v1/admin/schools/{id}/members", s.addSchoolMember)
+	mux.HandleFunc("GET /v1/schools/{school}/years", s.years)
+	mux.HandleFunc("POST /v1/schools/{school}/years", s.years)
+	mux.HandleFunc("GET /v1/schools/{school}/classes", s.classes)
+	mux.HandleFunc("POST /v1/schools/{school}/classes", s.classes)
+	mux.HandleFunc("GET /v1/schools/{school}/announcements", s.announcements)
+	mux.HandleFunc("POST /v1/schools/{school}/announcements", s.announcements)
+	mux.HandleFunc("GET /v1/schools/{school}/overview", s.overview)
+	mux.HandleFunc("GET /v1/classes/{id}/students", s.students)
+	mux.HandleFunc("POST /v1/classes/{id}/students", s.students)
+	mux.HandleFunc("GET /v1/classes/{id}/attendance", s.attendance)
+	mux.HandleFunc("PUT /v1/classes/{id}/attendance", s.attendance)
+	mux.HandleFunc("POST /v1/classes/{id}/teachers", s.assignTeacher)
+	mux.HandleFunc("GET /v1/classes/{id}/timetable", s.timetable)
+	mux.HandleFunc("POST /v1/classes/{id}/timetable", s.timetable)
+	mux.HandleFunc("GET /v1/classes/{id}/assignments", s.assignments)
+	mux.HandleFunc("POST /v1/classes/{id}/assignments", s.assignments)
+	mux.HandleFunc("GET /v1/assignments/{id}/submissions", s.submissions)
+	mux.HandleFunc("POST /v1/assignments/{id}/submissions", s.submissions)
+	mux.HandleFunc("PATCH /v1/assignments/{id}/submissions", s.submissions)
+	mux.HandleFunc("GET /v1/classes/{id}/leave-requests", s.leaveRequests)
+	mux.HandleFunc("POST /v1/classes/{id}/leave-requests", s.leaveRequests)
+	mux.HandleFunc("PATCH /v1/classes/{id}/leave-requests", s.leaveRequests)
+	mux.HandleFunc("POST /v1/schools/{school}/guardians", s.grantGuardian)
+	mux.HandleFunc("GET /v1/me/children", s.children)
+	mux.HandleFunc("GET /v1/me/children/{student}/attendance", s.childAttendance)
+	mux.HandleFunc("GET /v1/me/children/{student}/grades", s.childGrades)
+	mux.HandleFunc("POST /v1/me/children/{student}/leave", s.childLeave)
+	mux.HandleFunc("GET /v1/books/{id}/outline", s.outline)
+	mux.HandleFunc("GET /v1/lessons/{id}", s.lessonContent)
+	mux.HandleFunc("POST /v1/admin/books/{id}/chapters", s.createChapter)
+	mux.HandleFunc("POST /v1/admin/chapters/{id}/lessons", s.createLesson)
 	mux.HandleFunc("GET /v1/books", s.list)
 	mux.HandleFunc("GET /v1/books/{id}", s.get)
+	mux.HandleFunc("GET /v1/admin/books", s.adminBooks)
+	mux.HandleFunc("GET /v1/admin/books/{id}/chapters", s.draftOutline)
 	mux.HandleFunc("POST /v1/admin/books", s.create)
 	mux.HandleFunc("POST /v1/admin/books/{id}/{action}", s.transition)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

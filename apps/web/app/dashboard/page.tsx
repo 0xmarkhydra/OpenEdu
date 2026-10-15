@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import AdminPanel from "./panel";
+import SchoolPanel from "./school-panel";
+import ParentPanel from "./parent-panel";
 
 type Profile={user_id:string;school_id?:string;roles:string[]};
 type School={id:string;name:string;slug:string};
@@ -25,9 +27,9 @@ export default async function DashboardPage(){
   return <section className="container dashboard">
     <div className="dashboard-top">
       <div><span className="eyebrow section-eyebrow">OPENEDU WORKSPACE</span><h1>Trung tâm quản trị</h1><p>Vai trò: <strong>{profile.roles.join(", ")}</strong>{profile.school_id && <> · Trường: {profile.school_id}</>}</p></div>
-      <div className="dashboard-tools"><Link className="back" href="/">← Thư viện</Link><form action="/api/auth/logout" method="post"><LogoutButton/></form></div>
+      <div className="dashboard-tools"><Link className="back" href="/">← Thư viện</Link>{profile.roles.some(r=>["platform_admin","school_admin","content_admin","content_reviewer"].includes(r))&&<Link className="back" href="/dashboard/content">Quản trị học liệu</Link>}<form action="/api/auth/logout" method="post"><LogoutButton/></form></div>
     </div>
-    {isPlatform ? <AdminPanel initialSchools={data?.items||[]}/> : <div className="empty-state"><h3>Đã xác thực tài khoản</h3><p>Những thao tác của trường, giáo viên và phụ huynh sẽ được mở theo phân quyền sau khi chức năng hoàn thiện.</p></div>}
+    {isPlatform ? <AdminPanel initialSchools={data?.items||[]}/> : profile.school_id ? profile.roles.includes("guardian") && !profile.roles.some(r=>["school_admin","principal","teacher","student"].includes(r)) ? <ParentPanel/> : <SchoolPanel schoolId={profile.school_id} userRoles={profile.roles}/> : <div className="empty-state"><h3>Chưa có trường liên kết</h3><p>Liên hệ quản trị viên để được cấp quyền truy cập trường học.</p></div>}
   </section>;
 }
 

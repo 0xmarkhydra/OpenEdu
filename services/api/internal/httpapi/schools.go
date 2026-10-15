@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/0xmarkhydra/FreeEducation/services/api/internal/auth"
+	"github.com/0xmarkhydra/OpenEdu/services/api/internal/auth"
 )
 
 var schoolSlug = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$`)

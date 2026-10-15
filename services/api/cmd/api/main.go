@@ -8,10 +8,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/0xmarkhydra/FreeEducation/services/api/internal/auth"
-	"github.com/0xmarkhydra/FreeEducation/services/api/internal/catalog"
-	"github.com/0xmarkhydra/FreeEducation/services/api/internal/httpapi"
-	"github.com/0xmarkhydra/FreeEducation/services/api/migrations"
+	"github.com/0xmarkhydra/OpenEdu/services/api/internal/auth"
+	"github.com/0xmarkhydra/OpenEdu/services/api/internal/catalog"
+	"github.com/0xmarkhydra/OpenEdu/services/api/internal/httpapi"
+	"github.com/0xmarkhydra/OpenEdu/services/api/migrations"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -43,6 +43,6 @@ func main() {
 	db.SetConnMaxLifetime(15 * time.Minute)
 	port := env("PORT", "8080")
 	server := &http.Server{Addr: ":" + port, Handler: httpapi.New(catalog.NewPostgresStore(db), v, db), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 15 * time.Second, IdleTimeout: 60 * time.Second}
-	log.Printf("FreeEducation API listening on :%s", port)
+	log.Printf("OpenEdu API listening on :%s", port)
 	log.Fatal(server.ListenAndServe())
 }

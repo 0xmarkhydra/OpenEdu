@@ -43,11 +43,11 @@ Application code is under services/api and apps/web. Both have independent Docke
 5. Inspect build/deployment logs and confirm schema migration succeeds.
 6. Generate domains for web and optionally api from Railway service settings.
 7. Verify API /health/live and /health/ready, and the public Web homepage. Review 4xx/5xx logs.
-8. For GitHub continuous deployment, connect both services to the FreeEducation repo with distinct root paths and an approved release branch. Keep main protected.
+8. For GitHub continuous deployment, connect both services to the OpenEdu repo with distinct root paths and an approved release branch. Keep main protected.
 
 ## Verified deployment, 2026-10-14
 
-- GitHub repository: https://github.com/0xmarkhydra/FreeEducation, branch `dev`, deployed commit `9e27650`.
+- GitHub repository: https://github.com/0xmarkhydra/OpenEdu, branch `dev`, deployed commit `9e27650`.
 - `api` and `web` both deploy automatically from GitHub, using Railway service root directories `/services/api` and `/apps/web`.
 - API: Docker image build succeeded, PostgreSQL bootstrap migration applied, `/health/ready` healthcheck passed and Railway deployment status SUCCESS.
 - Web: Docker image build succeeded, `/` healthcheck passed, HTTPS HEAD returned HTTP 200, and browser snapshot showed the live library interface with an empty catalog rather than an upstream API error.
