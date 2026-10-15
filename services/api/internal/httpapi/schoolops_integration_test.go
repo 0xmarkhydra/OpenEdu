@@ -275,6 +275,16 @@ func TestSchoolLearningOperationsPostgres(t *testing.T) {
 	if len(records["items"].([]any)) != 1 {
 		t.Fatalf("unexpected guardian grade records: %+v", records)
 	}
+	if len(records["quiz_items"].([]any)) != 1 {
+		t.Fatalf("guardian quiz score missing: %+v", records)
+	}
+	childQuiz := records["quiz_items"].([]any)[0].(map[string]any)
+	if childQuiz["grade"].(float64) != 5 {
+		t.Fatalf("guardian quiz score wrong: %+v", childQuiz)
+	}
+	if _, leak := childQuiz["correct_option"]; leak {
+		t.Fatal("guardian leaked answer key")
+	}
 	status, attendanceForParent := request("guardian", "GET", "/v1/me/children/"+ids["student"]+"/attendance", nil)
 	check(200, status, attendanceForParent)
 	if attendanceForParent["items"] == nil {
@@ -313,6 +323,8 @@ func TestSchoolLearningOperationsPostgres(t *testing.T) {
 	if len(blocked["items"].([]any)) != 0 {
 		t.Fatalf("revoked guardian retained private messages: %+v", blocked)
 	}
+	status, _ = request("guardian", "GET", "/v1/me/children/"+ids["student"]+"/grades", nil)
+	check(403, status, nil)
 	status, _ = request("guardian", "POST", "/v1/me/messages", map[string]any{"class_id": classID, "recipient_id": ids["teacher"], "content": "Revoked request"})
 	check(403, status, nil)
 	status, report := request("principal", "GET", path+"/reports", nil)
@@ -320,6 +332,9 @@ func TestSchoolLearningOperationsPostgres(t *testing.T) {
 	stats := report["summary"].(map[string]any)
 	if stats["total_students"].(float64) != 1 || stats["assignments"].(float64) != 1 {
 		t.Fatalf("bad report: %+v", stats)
+	}
+	if stats["quizzes"].(float64) != 1 || stats["quiz_attempts"].(float64) != 1 || stats["quiz_average_grade"].(float64) != 5 {
+		t.Fatalf("quiz metrics incorrect: %+v", stats)
 	}
 	status, _ = request("student", "GET", path+"/reports", nil)
 	check(403, status, nil)

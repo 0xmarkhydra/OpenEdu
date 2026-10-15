@@ -165,7 +165,39 @@ func (s *Server) childGrades(w http.ResponseWriter, r *http.Request) {
 		fail(w, 503, "unable to read grades")
 		return
 	}
-	respond(w, 200, map[string]any{"items": items})
+	// Only final submitted scores from the verified child's currently
+	// authorized school are exposed. Neither question keys nor answers leave
+	// the exam API through the family portal.
+	quizRows, err := s.db.QueryContext(r.Context(), `SELECT q.title,cl.name,qa.grade,qa.submitted_at
+ FROM quiz_attempts qa JOIN quizzes q ON q.id=qa.quiz_id AND q.school_id=qa.school_id
+ JOIN classes cl ON cl.id=q.class_id AND cl.school_id=q.school_id
+ WHERE qa.school_id=$1::uuid AND qa.student_id=$2::uuid
+ AND qa.submitted_at IS NOT NULL AND qa.grade IS NOT NULL
+ ORDER BY qa.submitted_at DESC LIMIT 100`, school, student)
+	if err != nil {
+		fail(w, 503, "unable to load exam grades")
+		return
+	}
+	defer quizRows.Close()
+	quizItems := []map[string]any{}
+	for quizRows.Next() {
+		var title, class string
+		var grade float64
+		var submitted time.Time
+		if err := quizRows.Scan(&title, &class, &grade, &submitted); err != nil {
+			fail(w, 503, "unable to load exam grades")
+			return
+		}
+		quizItems = append(quizItems, map[string]any{
+			"title": title, "class_name": class, "grade": grade,
+			"submitted_at": submitted, "feedback": "",
+		})
+	}
+	if quizRows.Err() != nil {
+		fail(w, 503, "unable to load exam grades")
+		return
+	}
+	respond(w, 200, map[string]any{"items": items, "quiz_items": quizItems})
 }
 func (s *Server) childLeave(w http.ResponseWriter, r *http.Request) {
 	school, guardian, ok := s.guardianChild(w, r)

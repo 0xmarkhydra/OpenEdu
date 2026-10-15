@@ -9,7 +9,7 @@
 - Mỗi học sinh chỉ có một bản ghi lượt làm cho một đề. Bấm `start` nhiều lần không gia hạn đồng hồ. Nộp bài một lần, phải trả lời toàn bộ câu, máy chủ chấm thang điểm 10; mỗi câu có cùng trọng số.
 - Không có endpoint đưa đáp án đúng cho học sinh, kể cả sau khi hoàn thành; chỉ giáo viên được phân công/lãnh đạo trường có thể xem khóa đáp án và kết quả tổng hợp.
 - Nộp sau khi hết giờ, nộp trùng, nộp không đủ câu hay giả mạo ID câu hỏi đều bị từ chối. Kết quả thí sinh không bao gồm đáp án đúng. Điểm được lưu theo từng học sinh/đề.
-- Phụ huynh không có quyền tham gia bài kiểm tra thay học sinh.
+- Phụ huynh không có quyền tham gia bài kiểm tra thay học sinh. Sau khi được xác minh quan hệ, phụ huynh chỉ xem **điểm thi đã nộp của con mình** tại Sổ liên lạc; không xem đáp án/câu trả lời hoặc điểm của học sinh khác. Thu hồi quan hệ giám hộ sẽ thu hồi luôn quyền xem kết quả.
 
 ## API
 

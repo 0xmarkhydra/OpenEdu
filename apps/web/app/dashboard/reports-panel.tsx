@@ -1,10 +1,10 @@
 "use client";
 import {useEffect,useState} from "react";
-import {BarChart3,CalendarCheck,GraduationCap,NotebookPen,School,AlertCircle,RefreshCw} from "lucide-react";
+import {BarChart3,CalendarCheck,GraduationCap,NotebookPen,School,AlertCircle,RefreshCw,FileQuestion,ClipboardList} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Card} from "@/components/ui/card";
 type SchoolReport={
- summary:{total_students:number;total_classes:number;attendance_present_30d:number;attendance_total_30d:number;assignments:number;submissions:number;graded:number;pending_leave:number};
+ summary:{total_students:number;total_classes:number;attendance_present_30d:number;attendance_total_30d:number;assignments:number;submissions:number;graded:number;pending_leave:number;quizzes:number;quiz_attempts:number;quiz_average_grade:number|null};
  classes:{id:string;name:string;grade:number;students:number}[];
  period:string;
 };
@@ -32,6 +32,9 @@ export default function ReportsPanel({schoolId}:{schoolId:string}){
   {label:"Tỷ lệ có mặt (30 ngày)",value:rate===null?"Chưa có dữ liệu":rate+"%",Icon:CalendarCheck},
   {label:"Bài đã nộp",value:s.submissions,Icon:NotebookPen},
   {label:"Bài đã chấm",value:s.graded,Icon:BarChart3},
+  {label:"Đề kiểm tra",value:s.quizzes,Icon:FileQuestion},
+  {label:"Bài thi đã nộp",value:s.quiz_attempts,Icon:ClipboardList},
+  {label:"Điểm thi trung bình",value:s.quiz_average_grade===null?"Chưa có":s.quiz_average_grade.toFixed(2)+"/10",Icon:BarChart3},
   {label:"Đơn chờ duyệt",value:s.pending_leave,Icon:AlertCircle}
  ]:[];
  return <section className="school-report">

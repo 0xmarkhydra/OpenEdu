@@ -7,7 +7,7 @@ Status legend: IMPLEMENTED = executable and tested; FOUNDATION = meaningful code
 | Go API and PostgreSQL schema | FOUNDATION | Railway Docker build succeeded; startup migration applied and /health/ready succeeded; Go tests and vet passed |
 | Identity/login | FOUNDATION | Go login + bcrypt, JWT issuance, DB role revocation and HTTP-only web cookie tested locally; first production admin not provisioned, recovery/2FA pending |
 | Tenant-safe library catalog | FOUNDATION | published listing and basic mutation, more tests needed |
-| School management and RBAC | FOUNDATION | school/year/class/roster/teacher/timetable APIs and dashboards, guardian verification and scoped access tested; bulk import and audit pending |
+| School management and RBAC | FOUNDATION | school/year/class/roster/teacher/timetable APIs and dashboards, guardian verification, private exam score visibility and scoped access tested; bulk import and audit pending |
 | Text lesson reader and editorial CMS | FOUNDATION | chapter/lesson authoring, moderation, safe text reader and account-scoped bookmark/completion pass PostgreSQL integration; PDF/object delivery and licensing review remain pending |
 | Learning/assignments/grading | FOUNDATION | assignments, teacher scoring, feedback and server-timed single-choice exams with automatic grading and private answer keys pass disposable PostgreSQL tests; bank reuse, rubric/attachments pending |
 | Attendance and leave | FOUNDATION | teacher attendance, student and verified guardian leave request, approval/rejection pass PostgreSQL integration |

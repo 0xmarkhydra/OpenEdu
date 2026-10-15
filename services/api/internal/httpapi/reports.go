@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"database/sql"
 	"net/http"
 )
 
@@ -21,7 +22,11 @@ func (s *Server) schoolReport(w http.ResponseWriter, r *http.Request) {
 		Submissions       int `json:"submissions"`
 		Graded            int `json:"graded"`
 		PendingLeave      int `json:"pending_leave"`
+		Quizzes           int `json:"quizzes"`
+		QuizAttempts      int `json:"quiz_attempts"`
+		QuizAvgGrade      any `json:"quiz_average_grade"`
 	}{}
+	var quizAverage sql.NullFloat64
 	err := s.db.QueryRowContext(r.Context(), `SELECT
  (SELECT count(DISTINCT student_id) FROM class_students WHERE school_id=$1::uuid),
  (SELECT count(*) FROM classes WHERE school_id=$1::uuid),
@@ -30,8 +35,14 @@ func (s *Server) schoolReport(w http.ResponseWriter, r *http.Request) {
  (SELECT count(*) FROM assignments WHERE school_id=$1::uuid),
  (SELECT count(*) FROM assignment_submissions WHERE school_id=$1::uuid),
  (SELECT count(*) FROM assignment_submissions WHERE school_id=$1::uuid AND grade IS NOT NULL),
- (SELECT count(*) FROM leave_requests WHERE school_id=$1::uuid AND status='pending')`, school).
-		Scan(&stats.TotalStudents, &stats.TotalClasses, &stats.AttendancePresent, &stats.AttendanceTotal, &stats.Assignments, &stats.Submissions, &stats.Graded, &stats.PendingLeave)
+ (SELECT count(*) FROM leave_requests WHERE school_id=$1::uuid AND status='pending'),
+ (SELECT count(*) FROM quizzes WHERE school_id=$1::uuid),
+ (SELECT count(*) FROM quiz_attempts WHERE school_id=$1::uuid AND submitted_at IS NOT NULL),
+ (SELECT AVG(grade) FROM quiz_attempts WHERE school_id=$1::uuid AND submitted_at IS NOT NULL AND grade IS NOT NULL)`, school).
+		Scan(&stats.TotalStudents, &stats.TotalClasses, &stats.AttendancePresent, &stats.AttendanceTotal, &stats.Assignments, &stats.Submissions, &stats.Graded, &stats.PendingLeave, &stats.Quizzes, &stats.QuizAttempts, &quizAverage)
+	if quizAverage.Valid {
+		stats.QuizAvgGrade = quizAverage.Float64
+	}
 	if err != nil {
 		fail(w, 503, "unable to load report")
 		return

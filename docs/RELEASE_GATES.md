@@ -26,5 +26,5 @@ After pushing to dev, check Railway API and Web deployment SHA/status, migration
 
 ### Quiz module evidence (v0.6)
 - Class-scoped exam creation, question authoring, publish, single student attempt, server-enforced deadline and single-choice grading have disposable PostgreSQL integration tests.
-- Negative tests cover draft answer secrecy, incomplete answers, second submission, restart deadline, cross-school student, guardian access and expired attempt.
+- Negative tests cover draft answer secrecy, incomplete answers, second submission, restart deadline, cross-school student, guardian access and expired attempt. Verified guardians can read only submitted child scores, and revocation immediately denies access; school leadership has aggregate (non-PII) quiz reporting.
 - Web has role-aware iOS-style dashboard Quiz tab. Flutter adds a class-to-exams student UI; native widget tests and iOS Simulator build pass for this change. Private mobile API domain, Android build and real-device acceptance remain rollout prerequisites. Successful local tests do not authorize storing real student exam data.

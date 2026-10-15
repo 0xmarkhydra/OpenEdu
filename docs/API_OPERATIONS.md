@@ -89,3 +89,6 @@ Reminder: no PDF/offline access, analytics, consent audit, or school-wide progre
 ## Timed auto-graded exams (v0.6)
 
 `docs/QUIZ_EXAMS.md` contains the Vietnamese role and security guide for eight quiz endpoints: class quiz list and creation, staff-only question authoring and publishing, detail access restricted by active attempt, student start and submit, and class-level results. Answers are graded by Go API server and never delivered as `correct_option` to a student. Multi-tenant PostgreSQL tests reject cross-school users, guardians, expired submissions, duplicate submissions and attempts to edit published exams.
+
+### Exam scores for families and school reports
+The existing `GET /v1/me/children/{student}/grades` still returns `items` for assignment feedback, and also returns `quiz_items` with **submitted** exam titles, class names, scores and submission timestamps. This remains guarded by the live verified guardian link. No answer keys or responses are included. Revocation denies both kinds of grade access. The existing `GET /v1/schools/{school}/reports` now includes `quizzes`, `quiz_attempts` (submitted only) and `quiz_average_grade` (nullable) in the summary, visible only to principals/school admins. Tests on disposable PostgreSQL verify these boundaries.

@@ -1,6 +1,6 @@
 "use client";
 import { FormEvent,useEffect,useState } from "react";
-import { ClipboardCheck, GraduationCap, HeartHandshake, CalendarClock, Send } from "lucide-react";
+import { ClipboardCheck, GraduationCap, HeartHandshake, CalendarClock, Send, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MessagesPanel from "./messages-panel";
 type Child={student_id:string;name:string;class_id:string;class_name:string};
@@ -11,6 +11,7 @@ export default function ParentPanel(){
  const [children,setChildren]=useState<Child[]>([]);
  const [selected,setSelected]=useState("");
  const [grades,setGrades]=useState<Grade[]>([]);
+ const [quizGrades,setQuizGrades]=useState<Grade[]>([]);
  const [attendance,setAttendance]=useState<Attendance[]>([]);
  const [status,setStatus]=useState("");
  const [busy,setBusy]=useState(false);
@@ -33,8 +34,8 @@ export default function ParentPanel(){
    const res=await fetch("/api/guardian/children/"+encodeURIComponent(selected)+"/"+section,{cache:"no-store"});
    const data=await res.json();
    if(!res.ok)throw new Error(data.error||"Không thể tải dữ liệu");
-   return data.items||[];
-  })).then(([g,a])=>{if(alive){setGrades(g);setAttendance(a)}}).catch(err=>{if(alive)setStatus(err.message)});
+   return data;
+  })).then(([g,a])=>{if(alive){setGrades(g.items||[]);setQuizGrades(g.quiz_items||[]);setAttendance(a.items||[])}}).catch(err=>{if(alive)setStatus(err.message)});
   return()=>{alive=false};
  },[selected]);
  const child=children.find(c=>c.student_id===selected);
@@ -60,6 +61,9 @@ export default function ParentPanel(){
   {selected&&<div className="portal-two">
    <section className="glass-card"><h2 className="icon-heading"><GraduationCap size={23} strokeWidth={1.9} aria-hidden="true"/>Kết quả học tập</h2>
     {grades.length?grades.map((g,i)=><div key={i} className="portal-row"><div><strong>{g.title}</strong><small>{g.class_name} · {g.feedback}</small></div><strong>{g.grade===null?"Chưa chấm":g.grade+"/10"}</strong></div>):<p className="muted">Chưa có kết quả được ghi nhận.</p>}
+   </section>
+   <section className="glass-card"><h2 className="icon-heading"><ClipboardList size={23} strokeWidth={1.9} aria-hidden="true"/>Điểm kiểm tra</h2>
+    {quizGrades.length?quizGrades.map((g,i)=><div key={i} className="portal-row"><div><strong>{g.title}</strong><small>{g.class_name} · Đã nộp bài</small></div><strong>{g.grade===null?"Chưa chấm":g.grade+"/10"}</strong></div>):<p className="muted">Chưa có điểm bài kiểm tra.</p>}
    </section>
    <section className="glass-card"><h2 className="icon-heading"><ClipboardCheck size={23} strokeWidth={1.9} aria-hidden="true"/>Điểm danh gần đây</h2>
     {attendance.length?attendance.map((a,i)=><div key={i} className="portal-row"><div><strong>{a.date}</strong><small>{a.class_name} · {a.note}</small></div><span className="pill">{a.status}</span></div>):<p className="muted">Chưa có dữ liệu điểm danh.</p>}
