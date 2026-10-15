@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { ArrowRight, School, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 type School={id:string;name:string;slug:string};
 type Result={error?:string;id?:string};
 
@@ -39,18 +41,18 @@ export default function AdminPanel({initialSchools}:{initialSchools:School[]}){
  }
  return <div className="admin-grid">
   <section className="admin-card">
-   <h2>Danh sách trường học</h2>
+   <h2 className="icon-heading"><School size={22} strokeWidth={1.9} aria-hidden="true"/>Danh sách trường học</h2>
    <p>Quản lý các đơn vị sử dụng OpenEdu. Mỗi trường có không gian dữ liệu riêng.</p>
    <div className="school-list">{schools.length?schools.map(s=><div className="school-row" key={s.id}><div><strong>{s.name}</strong><small>{s.slug}</small></div><button onClick={()=>setSelected(s.id)} type="button" className={selected===s.id?"school-selected":""}>Chọn</button></div>):<p>Chưa có trường nào. Tạo trường đầu tiên bên dưới.</p>}</div>
    <form className="auth-form" onSubmit={createSchool}>
     <h3>Thêm trường học</h3>
     <label>Tên trường<input required minLength={2} maxLength={160} value={name} onChange={e=>setName(e.target.value)} placeholder="Trường THCS ..."/></label>
     <label>Mã nhận diện (slug)<input required minLength={3} pattern="[a-z0-9][a-z0-9-]{1,48}[a-z0-9]" value={slug} onChange={e=>setSlug(e.target.value.toLowerCase())} placeholder="truong-thcs-abc"/></label>
-    <button disabled={busy}>Tạo trường →</button>
+    <Button disabled={busy}>Tạo trường<ArrowRight size={17} aria-hidden="true"/></Button>
    </form>
   </section>
   <section className="admin-card">
-   <h2>Thêm thành viên</h2>
+   <h2 className="icon-heading"><UserPlus size={22} strokeWidth={1.9} aria-hidden="true"/>Thêm thành viên</h2>
    <p>Cấp tài khoản vào trường đã chọn. Chỉ quản trị viên nền tảng được thực hiện.</p>
    <form className="auth-form" onSubmit={createMember}>
     <label>Trường<select value={selected} onChange={e=>setSelected(e.target.value)} required>{schools.length===0?<option value="">Chưa có trường</option>:schools.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
@@ -61,7 +63,7 @@ export default function AdminPanel({initialSchools}:{initialSchools:School[]}){
      <option value="student">Học sinh</option><option value="guardian">Phụ huynh</option><option value="content_admin">Quản lý học liệu</option><option value="content_reviewer">Duyệt học liệu</option>
     </select></label>
     <label>Mật khẩu khởi tạo<input type="password" autoComplete="new-password" required minLength={12} maxLength={72} value={memberPassword} onChange={e=>setMemberPassword(e.target.value)}/></label>
-    <button disabled={busy||!selected}>Cấp tài khoản →</button>
+    <Button disabled={busy||!selected}>Cấp tài khoản<ArrowRight size={17} aria-hidden="true"/></Button>
    </form>
   </section>
   {notice&&<p className="admin-notice" role="status">{notice}</p>}

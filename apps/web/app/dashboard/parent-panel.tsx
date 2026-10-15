@@ -1,5 +1,7 @@
 "use client";
 import { FormEvent,useEffect,useState } from "react";
+import { ClipboardCheck, GraduationCap, HeartHandshake, CalendarClock, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
 type Child={student_id:string;name:string;class_id:string;class_name:string};
 type Grade={title:string;class_name:string;grade:number|null;feedback:string;submitted_at:string};
 type Attendance={date:string;status:string;class_name:string;note:string};
@@ -49,24 +51,24 @@ export default function ParentPanel(){
  return <section className="parent-portal school-portal">
   <section className="glass-card parent-heading">
    <span className="eyebrow section-eyebrow">KẾT NỐI GIA ĐÌNH</span>
-   <h2>Sổ liên lạc điện tử</h2>
+   <h2 className="icon-heading"><HeartHandshake size={25} strokeWidth={1.9} aria-hidden="true"/>Sổ liên lạc điện tử</h2>
    <p className="muted">Theo dõi học tập và gửi yêu cầu đến nhà trường. Chỉ học sinh đã xác minh quan hệ được hiển thị.</p>
    <label className="portal-select">Chọn học sinh<select value={selected} onChange={e=>setSelected(e.target.value)}>{children.length===0?<option value="">Chưa có liên kết đã xác minh</option>:children.map(c=><option key={c.student_id} value={c.student_id}>{c.name} · {c.class_name||"Chưa xếp lớp"}</option>)}</select></label>
   </section>
   {status&&<div role="status" className="portal-message">{status}</div>}
   {selected&&<div className="portal-two">
-   <section className="glass-card"><h2>Kết quả học tập</h2>
+   <section className="glass-card"><h2 className="icon-heading"><GraduationCap size={23} strokeWidth={1.9} aria-hidden="true"/>Kết quả học tập</h2>
     {grades.length?grades.map((g,i)=><div key={i} className="portal-row"><div><strong>{g.title}</strong><small>{g.class_name} · {g.feedback}</small></div><strong>{g.grade===null?"Chưa chấm":g.grade+"/10"}</strong></div>):<p className="muted">Chưa có kết quả được ghi nhận.</p>}
    </section>
-   <section className="glass-card"><h2>Điểm danh gần đây</h2>
+   <section className="glass-card"><h2 className="icon-heading"><ClipboardCheck size={23} strokeWidth={1.9} aria-hidden="true"/>Điểm danh gần đây</h2>
     {attendance.length?attendance.map((a,i)=><div key={i} className="portal-row"><div><strong>{a.date}</strong><small>{a.class_name} · {a.note}</small></div><span className="pill">{a.status}</span></div>):<p className="muted">Chưa có dữ liệu điểm danh.</p>}
    </section>
-   {child?.class_id&&<section className="glass-card"><h2>Xin nghỉ học</h2><p className="muted">Đơn sẽ được giáo viên hoặc nhà trường xét duyệt.</p>
+   {child?.class_id&&<section className="glass-card"><h2 className="icon-heading"><CalendarClock size={23} strokeWidth={1.9} aria-hidden="true"/>Xin nghỉ học</h2><p className="muted">Đơn sẽ được giáo viên hoặc nhà trường xét duyệt.</p>
     <form className="portal-form" onSubmit={submit}>
      <label>Từ ngày<input type="date" value={from} onChange={e=>setFrom(e.target.value)} required/></label>
      <label>Đến ngày<input type="date" min={from} value={to} onChange={e=>setTo(e.target.value)} required/></label>
      <label>Lý do<textarea rows={4} required minLength={3} maxLength={1200} value={reason} onChange={e=>setReason(e.target.value)}/></label>
-     <button disabled={busy}>{busy?"Đang gửi...":"Gửi đơn xin nghỉ"}</button>
+     <Button disabled={busy}><Send size={16} aria-hidden="true"/>{busy?"Đang gửi...":"Gửi đơn xin nghỉ"}</Button>
     </form>
    </section>}
   </div>}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 type Lesson={id:string;title:string;content:string;content_type:string;book_id:string};
 
 export default async function ReadLesson({params}:{params:Promise<{id:string;lessonId:string}>}){
@@ -15,7 +16,7 @@ export default async function ReadLesson({params}:{params:Promise<{id:string;les
  }catch{notFound();}
  if(lesson.book_id!==id)notFound();
  return <section className="container detail lesson-view">
-  <Link href={"/books/"+encodeURIComponent(id)} className="back">← Danh mục chương và bài</Link>
+  <Link href={"/books/"+encodeURIComponent(id)} className="back"><ArrowLeft size={16} aria-hidden="true"/>Danh mục chương và bài</Link>
   <article className="glass-card lesson-paper">
    <span className="eyebrow section-eyebrow">OPENEDU READER</span>
    <h1>{lesson.title}</h1>

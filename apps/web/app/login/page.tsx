@@ -3,6 +3,8 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowLeft, ArrowRight, BookOpenCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const router=useRouter();
@@ -24,8 +26,8 @@ export default function LoginPage() {
   }
   return <section className="auth-wrap">
     <div className="auth-card">
-      <Link className="back" href="/">← Thư viện OpenEdu</Link>
-      <div className="auth-symbol">✦</div>
+      <Link className="back" href="/"><ArrowLeft size={16} aria-hidden="true"/>Thư viện OpenEdu</Link>
+      <div className="auth-symbol" aria-hidden="true"><BookOpenCheck size={28} strokeWidth={1.9}/></div>
       <span className="eyebrow section-eyebrow">OPENEDU ACCOUNT</span>
       <h1>Đăng nhập</h1>
       <p>Không gian dành cho quản trị nhà trường và các tài khoản đã được cấp quyền.</p>
@@ -34,7 +36,7 @@ export default function LoginPage() {
         <label>Mật khẩu<input type="password" autoComplete="current-password" minLength={12} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="Nhập mật khẩu"/></label>
         <label>Mã trường <small>(chỉ cần nếu tài khoản thuộc nhiều trường)</small><input value={school} onChange={e=>setSchool(e.target.value.trim())} placeholder="UUID của trường (không bắt buộc)"/></label>
         {error && <div role="alert" className="form-error">{error==="select a school to sign in"?"Vui lòng chọn mã trường trước khi đăng nhập.":error}</div>}
-        <button type="submit" disabled={busy}>{busy?"Đang kiểm tra...":"Đăng nhập →"}</button>
+        <Button type="submit" disabled={busy}>{busy?"Đang kiểm tra...":"Đăng nhập"} {!busy && <ArrowRight size={17} aria-hidden="true"/>}</Button>
       </form>
       <p className="auth-note">Tài khoản do quản trị viên cấp. Hệ thống không cho phép tự tạo tài khoản học sinh hoặc phụ huynh công khai.</p>
     </div>

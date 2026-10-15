@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { ArrowRight, ArrowUpRight, BookOpenCheck, LibraryBig, NotebookPen, UsersRound, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 type Book = {
   id: string;
@@ -55,7 +58,7 @@ export default async function LibraryPage({
               <option value="">Tất cả lớp</option>
               {Array.from({ length: 12 }, (_, i) => <option value={i + 1} key={i}>Lớp {i + 1}</option>)}
             </select>
-            <button type="submit">Tìm học liệu →</button>
+            <Button type="submit"><Search size={18} strokeWidth={1.9} aria-hidden="true"/>Tìm học liệu<ArrowRight size={17} strokeWidth={1.9} aria-hidden="true"/></Button>
           </form>
           <div className="hero-caption">Sách và học liệu chỉ được công bố sau khi xác thực quyền sử dụng.</div>
         </div>
@@ -74,17 +77,17 @@ export default async function LibraryPage({
           <div className="book-grid">
             {items.map(book => (
               <Link href={"/books/" + encodeURIComponent(book.id)} className="book-card" key={book.id}>
-                <div className="book-cover" aria-hidden="true"><span className="cover-icon">✦</span><span>LỚP {book.grade}</span></div>
-                <div className="book-meta"><span className="subject-chip">{book.subject_code}</span><h3>{book.title}</h3><p>{book.rights_owner}</p><span className="view-label">Xem học liệu ↗</span></div>
+                <div className="book-cover" aria-hidden="true"><span className="cover-icon"><BookOpenCheck size={30} strokeWidth={1.9}/></span><span>LỚP {book.grade}</span></div>
+                <div className="book-meta"><span className="subject-chip">{book.subject_code}</span><h3>{book.title}</h3><p>{book.rights_owner}</p><span className="view-label">Xem học liệu <ArrowUpRight size={16} strokeWidth={1.9} aria-hidden="true"/></span></div>
               </Link>
             ))}
           </div>
         )}
       </section>
       <section className="container features">
-        <div><span className="feature-icon">📚</span><h3>Học liệu chuẩn hóa</h3><p>Sắp xếp theo môn học, lớp và bài để tìm kiếm thuận tiện.</p></div>
-        <div><span className="feature-icon">📝</span><h3>Học và đánh giá</h3><p>Hệ thống bài tập, kết quả và tiến độ đang được phát triển.</p></div>
-        <div><span className="feature-icon">🤝</span><h3>Kết nối gia đình</h3><p>Tương lai hỗ trợ nhà trường, giáo viên và phụ huynh.</p></div>
+        <Card><span className="feature-icon"><LibraryBig size={28} strokeWidth={1.9} aria-hidden="true"/></span><h3>Học liệu chuẩn hóa</h3><p>Sắp xếp theo môn học, lớp và bài để tìm kiếm thuận tiện.</p></Card>
+        <Card><span className="feature-icon"><NotebookPen size={28} strokeWidth={1.9} aria-hidden="true"/></span><h3>Học và đánh giá</h3><p>Giao bài, nộp bài và xem đánh giá trong không gian học tập.</p></Card>
+        <Card><span className="feature-icon"><UsersRound size={28} strokeWidth={1.9} aria-hidden="true"/></span><h3>Kết nối gia đình</h3><p>Phụ huynh đã được xác minh có thể theo dõi điểm và điểm danh của con.</p></Card>
       </section>
     </>
   );

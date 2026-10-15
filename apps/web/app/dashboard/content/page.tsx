@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import ContentEditor from "./editor";
 
 export default async function EditorialPage(){
@@ -17,7 +18,7 @@ export default async function EditorialPage(){
  }catch{redirect("/login");}
  if(!roles.some(role=>["platform_admin","school_admin","content_admin","content_reviewer"].includes(role)))redirect("/dashboard");
  return <section className="container dashboard">
-  <div className="dashboard-top"><div><span className="eyebrow section-eyebrow">OPENEDU CONTENT STUDIO</span><h1>Quản trị học liệu</h1><p>Soạn bài và quản lý quy trình duyệt, xuất bản với chứng cứ quyền sử dụng.</p></div><Link className="back" href="/dashboard">← Dashboard</Link></div>
+  <div className="dashboard-top"><div><span className="eyebrow section-eyebrow">OPENEDU CONTENT STUDIO</span><h1>Quản trị học liệu</h1><p>Soạn bài và quản lý quy trình duyệt, xuất bản với chứng cứ quyền sử dụng.</p></div><Link className="back" href="/dashboard"><ArrowLeft size={16} aria-hidden="true"/>Dashboard</Link></div>
   <ContentEditor global={roles.includes("platform_admin")&&!schoolID}/>
  </section>;
 }

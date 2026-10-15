@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BookOpenCheck, LibraryBig, LayoutDashboard, LogIn } from "lucide-react";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,14 +15,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <header className="site-header">
           <div className="container header-inner">
             <Link className="logo" href="/" aria-label="OpenEdu - về trang chủ">
-              <span className="logo-icon" aria-hidden="true">O</span>
+              <span className="logo-icon" aria-hidden="true"><BookOpenCheck size={25} strokeWidth={1.9}/></span>
               <span>Open<span className="logo-accent">Edu</span></span>
             </Link>
             <nav aria-label="Điều hướng chính">
-              <Link href="/">Thư viện</Link>
-              <Link href="/dashboard">Lớp học</Link>
-              <Link href="/dashboard">Quản trị</Link>
-              <Link href="/login">Đăng nhập</Link>
+              <Link href="/"><LibraryBig size={17} strokeWidth={1.9} aria-hidden="true"/>Thư viện</Link>
+              <Link href="/dashboard"><LayoutDashboard size={17} strokeWidth={1.9} aria-hidden="true"/>Không gian học tập</Link>
+              <Link href="/login"><LogIn size={17} strokeWidth={1.9} aria-hidden="true"/>Đăng nhập</Link>
             </nav>
           </div>
         </header>

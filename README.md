@@ -4,6 +4,12 @@ Scalable education platform: licensed digital library, assessment, student/teach
 
 **Status:** early implementation. Scope: [Notion proposal for client review](https://app.notion.com/p/3f37dabb721d81549ec8d5670a5d5ac7). Proposed items are NOT customer-approved commitments.
 
+## OpenEdu interface and agent guidelines
+
+The frontend uses **local shadcn/ui-style components + Tailwind CSS v4 + Radix UI + Lucide React** with an iOS-inspired Liquid Glass theme. Icon rules and screen guidelines are mandatory for every UI agent: read `AGENTS.md`, `CLAUDE.md`, `skills/openedu-ui/SKILL.md` and `docs/DESIGN_SYSTEM.md`.
+
+`cd apps/web && npm ci && npm run verify` runs TypeScript, a full icon glyph audit and production build. The build fails when legacy emoji/pictogram icons are introduced in TSX. Use named Lucide imports and reusable local UI components.
+
 ## Hosted foundation
 
 - Public web: https://web-production-e29d5.up.railway.app/

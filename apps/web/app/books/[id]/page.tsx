@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 
 type Book={id:string;title:string;grade:number;subject_code:string;rights_owner:string;rights_license:string;rights_source:string;status:string};
 type Lesson={id:string;title:string;position:number;content_type:string};
@@ -17,9 +18,9 @@ export default async function BookPage({params}:{params:Promise<{id:string}>}){
  const book=await bookResponse.json() as Book;
  const chapters:Chapter[]=outlineResponse?.ok?(await outlineResponse.json() as {items:Chapter[]}).items||[]:[];
  return <section className="container detail">
-  <Link href="/" className="back">← Thư viện OpenEdu</Link>
+  <Link href="/" className="back"><ArrowLeft size={16} aria-hidden="true"/>Thư viện OpenEdu</Link>
   <div className="detail-card">
-   <div className="detail-cover" aria-hidden="true">📖</div>
+   <div className="detail-cover" aria-hidden="true"><BookOpen size={88} strokeWidth={1.4}/></div>
    <div>
     <span className="eyebrow section-eyebrow">HỌC LIỆU ĐƯỢC PHÁT HÀNH · LỚP {book.grade}</span>
     <h1>{book.title}</h1><p className="detail-subject">Môn học: {book.subject_code}</p>
@@ -37,7 +38,7 @@ export default async function BookPage({params}:{params:Promise<{id:string}>}){
      {ch.lessons.length===0?<p className="muted">Chưa có bài học trong chương.</p>:<div className="outline-lessons">{ch.lessons.map(lesson=>
       lesson.content_type==="pdf"
       ? <span className="outline-link disabled" key={lesson.id}><span>{lesson.position}. {lesson.title}</span><small>PDF — chờ cấp quyền</small></span>
-      : <Link className="outline-link" key={lesson.id} href={"/books/"+encodeURIComponent(id)+"/lessons/"+encodeURIComponent(lesson.id)}><span>{lesson.position}. {lesson.title}</span><span aria-hidden="true">›</span></Link>
+      : <Link className="outline-link" key={lesson.id} href={"/books/"+encodeURIComponent(id)+"/lessons/"+encodeURIComponent(lesson.id)}><span>{lesson.position}. {lesson.title}</span><ArrowRight size={18} strokeWidth={1.9} aria-hidden="true"/></Link>
      )}</div>}
     </section>
    )}

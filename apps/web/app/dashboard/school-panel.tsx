@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
+import { School, UsersRound, GraduationCap, Bell, LayoutDashboard, ClipboardCheck, CalendarDays, NotebookPen, CalendarClock, CircleCheck, CircleX } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 type RecordItem=Record<string,unknown>;
 type Overview={classes:number;students:number;teachers:number;announcements:number};
 type Year={id:string;name:string;starts_on:string;ends_on:string};
@@ -14,7 +16,7 @@ type Period={id:string;weekday:number;period:number;subject_code:string;room:str
 
 const day=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Ho_Chi_Minh"});
 const weekdays=["","Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7","Chủ nhật"];
-const roles:{[key:string]:string}={school_admin:"Quản trị trường",principal:"Ban giám hiệu",teacher:"Giáo viên",student:"Học sinh",guardian:"Phụ huynh"};
+
 const uid=(v:string)=>/^[a-f0-9-]{36}$/i.test(v);
 
 export default function SchoolPanel({schoolId,userRoles}:{schoolId:string;userRoles:string[]}){
@@ -112,17 +114,17 @@ export default function SchoolPanel({schoolId,userRoles}:{schoolId:string;userRo
  const handle=(event:FormEvent<HTMLFormElement>,path:string,method:string,data:RecordItem,success:string,reset?:()=>void)=>{
   event.preventDefault();void submit(path,method,data,success,reset);
  };
- return <div className="school-portal">
-  <div className="glass-tabs" role="tablist" aria-label="Phân hệ trường học">
-   {[
-    ["overview","Tổng quan"],["classes","Lớp học"],["learning","Bài tập"],["attendance","Điểm danh"],["schedule","Thời khóa biểu"],["announcements","Thông báo"],["leaves","Xin nghỉ"]
-   ].map(([id,label])=><button key={id} type="button" role="tab" aria-selected={tab===id} onClick={()=>setTab(id)} className={tab===id?"active":""}>{label}</button>)}
-  </div>
+
+ const panel = (<>
   {message&&<div role="status" className="portal-message">{message}</div>}
   {loading?<div className="glass-card" role="status">Đang tải dữ liệu trường học…</div>:null}
   {tab==="overview"&&<div className="glass-grid">
-   {[["Lớp học",overview.classes,"▦"],["Học sinh",overview.students,"♙"],["Giáo viên",overview.teachers,"✦"],["Thông báo",overview.announcements,"◉"]].map(([name,val,ico])=>
-    <div className="glass-card stat-card" key={String(name)}><span>{ico}</span><strong>{String(val)}</strong><small>{name}</small></div>)}
+   {[
+    { name:"Lớp học", value:overview.classes, Icon:School },
+    { name:"Học sinh", value:overview.students, Icon:UsersRound },
+    { name:"Giáo viên", value:overview.teachers, Icon:GraduationCap },
+    { name:"Thông báo", value:overview.announcements, Icon:Bell },
+   ].map(({name,value,Icon})=><div className="glass-card stat-card" key={name}><span><Icon size={24} strokeWidth={1.9} aria-hidden="true"/></span><strong>{value}</strong><small>{name}</small></div>)}
    <section className="glass-card glass-wide"><h2>Năm học</h2><p className="muted">Chọn năm học khi tạo lớp. Mỗi trường có dữ liệu độc lập.</p>
     {years.length?years.map(y=><div key={y.id} className="portal-row"><strong>{y.name}</strong><span>{y.starts_on} → {y.ends_on}</span></div>):<p>Chưa có năm học.</p>}
     {isAdmin&&<form className="portal-form" onSubmit={e=>handle(e,url("schools",schoolId,"years"),"POST",{name:yearName,starts_on:yearStart,ends_on:yearEnd},"Đã tạo năm học",()=>{setYearName("");setYearStart("");setYearEnd("");})}>
@@ -172,7 +174,7 @@ export default function SchoolPanel({schoolId,userRoles}:{schoolId:string;userRo
      </>:<p>Chọn lớp để xem danh sách.</p>}
     </section>
    </div>}
-   {tab==="attendance"&&<section className="glass-card"><h2>Điểm danh</h2>
+   {tab==="attendance"&&<section className="glass-card"><h2 className="icon-heading"><ClipboardCheck size={23} strokeWidth={1.9} aria-hidden="true"/>Điểm danh</h2>
     <label className="day-control">Ngày <input type="date" value={date} onChange={e=>setDate(e.target.value)}/></label>
     {!classId?<p className="muted">Chọn lớp để ghi nhận điểm danh.</p>:roster.map(st=>{
      const current=attendance.find(a=>a.student_id===st.id)?.status||"";
@@ -180,7 +182,7 @@ export default function SchoolPanel({schoolId,userRoles}:{schoolId:string;userRo
     })}
     {classId&&!roster.length&&<p className="muted">Chưa có học sinh hoặc bạn không có quyền xem danh sách.</p>}
    </section>}
-   {tab==="schedule"&&<section className="glass-card"><h2>Thời khóa biểu</h2>
+   {tab==="schedule"&&<section className="glass-card"><h2 className="icon-heading"><CalendarDays size={23} strokeWidth={1.9} aria-hidden="true"/>Thời khóa biểu</h2>
     {periods.length?<div className="schedule-grid">{periods.map(p=><div className="schedule-cell" key={p.id}><small>{weekdays[p.weekday]} · Tiết {p.period}</small><strong>{p.subject_code}</strong><span>{p.room||"—"}</span></div>)}</div>:<p className="muted">Chưa có lịch học.</p>}
     {classId&&isAdmin&&<form className="portal-form" onSubmit={e=>handle(e,url("classes",classId,"timetable"),"POST",{weekday:slotDay,period:slotPeriod,subject_code:subject,room:slotRoom},"Đã lưu tiết học")}>
      <h3>Thêm hoặc chỉnh tiết học</h3><label>Thứ<select value={slotDay} onChange={e=>setSlotDay(Number(e.target.value))}>{weekdays.slice(1).map((name,i)=><option key={i} value={i+1}>{name}</option>)}</select></label>
@@ -190,7 +192,7 @@ export default function SchoolPanel({schoolId,userRoles}:{schoolId:string;userRo
     </form>}
    </section>}
    {tab==="learning"&&<div className="portal-two">
-    <section className="glass-card"><h2>Bài tập của lớp</h2>
+    <section className="glass-card"><h2 className="icon-heading"><NotebookPen size={23} strokeWidth={1.9} aria-hidden="true"/>Bài tập của lớp</h2>
      {assignments.map(a=><button key={a.id} className={"class-item "+(selectedAssignment===a.id?"selected":"")} onClick={()=>void loadSubmissions(a.id)}>{a.title}<small>{a.due_at?"Hạn "+new Date(a.due_at).toLocaleDateString("vi-VN"):"Không giới hạn hạn nộp"}</small></button>)}
      {!assignments.length&&<p className="muted">Chưa có bài tập.</p>}
      {classId&&staff&&<form className="portal-form" onSubmit={e=>handle(e,url("classes",classId,"assignments"),"POST",{title:assignmentTitle,instructions},"Đã tạo bài tập",()=>{setAssignmentTitle("");setInstructions("");})}>
@@ -209,9 +211,9 @@ export default function SchoolPanel({schoolId,userRoles}:{schoolId:string;userRo
      </>}
     </section>
    </div>}
-   {tab==="leaves"&&<section className="glass-card"><h2>Đơn xin nghỉ</h2>
+   {tab==="leaves"&&<section className="glass-card"><h2 className="icon-heading"><CalendarClock size={23} strokeWidth={1.9} aria-hidden="true"/>Đơn xin nghỉ</h2>
     {leaves.map(l=><div className="portal-row" key={l.id}><div><strong>{l.reason}</strong><small>{l.start_on} → {l.end_on} · {l.status}</small></div>
-     {staff&&l.status==="pending"&&<div className="portal-inline"><button onClick={()=>void submit(url("classes",classId,"leave-requests"),"PATCH",{request_id:l.id,status:"approved"},"Đã duyệt đơn")}>Duyệt</button><button onClick={()=>void submit(url("classes",classId,"leave-requests"),"PATCH",{request_id:l.id,status:"rejected"},"Đã từ chối đơn")}>Từ chối</button></div>}
+     {staff&&l.status==="pending"&&<div className="portal-inline"><button onClick={()=>void submit(url("classes",classId,"leave-requests"),"PATCH",{request_id:l.id,status:"approved"},"Đã duyệt đơn")}><CircleCheck size={15} aria-hidden="true"/>Duyệt</button><button onClick={()=>void submit(url("classes",classId,"leave-requests"),"PATCH",{request_id:l.id,status:"rejected"},"Đã từ chối đơn")}><CircleX size={15} aria-hidden="true"/>Từ chối</button></div>}
     </div>)}
     {classId&&userRoles.includes("student")&&<form className="portal-form" onSubmit={e=>handle(e,url("classes",classId,"leave-requests"),"POST",{start_on:date,end_on:leaveEnd,reason:leaveReason},"Đã gửi đơn xin nghỉ",()=>setLeaveReason(""))}>
      <h3>Gửi đơn</h3><label>Từ ngày<input type="date" value={date} onChange={e=>setDate(e.target.value)}/></label>
@@ -221,7 +223,7 @@ export default function SchoolPanel({schoolId,userRoles}:{schoolId:string;userRo
     {!leaves.length&&<p className="muted">Chưa có đơn xin nghỉ.</p>}
    </section>}
   </>}
-  {tab==="announcements"&&<section className="glass-card"><h2>Thông báo nhà trường</h2>
+  {tab==="announcements"&&<section className="glass-card"><h2 className="icon-heading"><Bell size={23} strokeWidth={1.9} aria-hidden="true"/>Thông báo nhà trường</h2>
    {notices.map(n=><article className="notice" key={n.id}><span className="pill">{n.audience}</span><h3>{n.title}</h3><p>{n.content}</p><small>{new Date(n.created_at).toLocaleDateString("vi-VN")}</small></article>)}
    {!notices.length&&<p className="muted">Chưa có thông báo.</p>}
    {isAdmin&&<form className="portal-form" onSubmit={e=>handle(e,url("schools",schoolId,"announcements"),"POST",{title:noticeTitle,content:noticeContent,audience},"Đã đăng thông báo",()=>{setNoticeTitle("");setNoticeContent("");})}>
@@ -232,5 +234,21 @@ export default function SchoolPanel({schoolId,userRoles}:{schoolId:string;userRo
    </form>}
   </section>}
   <p className="portal-footnote">Không gian dữ liệu của trường được bảo vệ bằng phân quyền. Các tài khoản và học liệu chỉ được cấp phát bởi đơn vị có thẩm quyền.</p>
- </div>;
+
+ </>);
+ const nav = [
+  { id:"overview", label:"Tổng quan", Icon:LayoutDashboard },
+  { id:"classes", label:"Lớp học", Icon:School },
+  { id:"learning", label:"Bài tập", Icon:NotebookPen },
+  { id:"attendance", label:"Điểm danh", Icon:ClipboardCheck },
+  { id:"schedule", label:"Thời khóa biểu", Icon:CalendarDays },
+  { id:"announcements", label:"Thông báo", Icon:Bell },
+  { id:"leaves", label:"Xin nghỉ", Icon:CalendarClock },
+ ];
+ return <Tabs className="school-portal" value={tab} onValueChange={setTab}>
+  <TabsList aria-label="Phân hệ trường học">
+   {nav.map(({id,label,Icon})=><TabsTrigger value={id} key={id} icon={Icon}>{label}</TabsTrigger>)}
+  </TabsList>
+  {nav.map(({id})=><TabsContent key={id} value={id} forceMount>{tab===id?panel:null}</TabsContent>)}
+ </Tabs>;
 }
