@@ -26,7 +26,8 @@ The linked Notion document is a proposal pending customer approval.
 - [x] Per-user bookmark and completion progress for licensed published text lessons (web + Flutter)
 - [ ] PDF reader, offline rights, cross-device progress analytics
 - [x] Assignments, text submission, grading and feedback
-- [ ] File attachments, timed exams, question bank
+- [x] Timed, one-attempt multiple-choice tests with server-side grading (teacher drafting, publishing, student submissions, scores)
+- [ ] Reusable question bank, file attachments, exam rubrics, retakes and exam accommodations
 - [x] Class attendance and student/verified-parent leave request approval
 ## Stage 2 — full portal
 - [x] Responsive shared student/teacher/parent portal and class timetables

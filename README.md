@@ -41,3 +41,7 @@ Development branch: dev. Test before merging into main. License for project not 
 ## 0.4 progress — communications and native app foundation
 
 The current development branch adds tenant-authorized teacher/guardian messaging with read receipts, school aggregate reporting, authenticated password rotation with immediate JWT revocation, and a native Flutter app foundation (iOS Simulator previously compiled; Android SDK not configured). Read `docs/API_OPERATIONS.md`, `apps/mobile/README.md`, and **`docs/RELEASE_GATES.md`**. This is not yet a fully launched school platform.
+
+## Quizzes (v0.6)
+
+Teachers can create four-option, single-answer, time-limited exams from their class dashboard; enrolled students get one attempt with server-side grading and no answer key exposure. See `docs/QUIZ_EXAMS.md` for security and remaining limitations.

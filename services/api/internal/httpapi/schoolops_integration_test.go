@@ -139,6 +139,107 @@ func TestSchoolLearningOperationsPostgres(t *testing.T) {
 	status, hw := request("teacher", "POST", classRoute+"/assignments", map[string]any{"title": "Bài ôn tập chương 1", "instructions": "Trả lời các câu hỏi"})
 	check(201, status, hw)
 	aid := hw["id"].(string)
+
+	// Server-graded tests cannot leak answer keys or allow outsiders to start.
+	due := time.Now().Add(2 * time.Hour).UTC().Format(time.RFC3339)
+	status, _ = request("student", "POST", classRoute+"/quizzes", map[string]any{"title": "Forbidden quiz", "duration_minutes": 30, "due_at": due})
+	check(403, status, nil)
+	status, quiz := request("teacher", "POST", classRoute+"/quizzes", map[string]any{"title": "Safe math review", "duration_minutes": 30, "due_at": due})
+	check(201, status, quiz)
+	qid := quiz["id"].(string)
+	status, _ = request("student", "GET", "/v1/quizzes/"+qid, nil)
+	check(404, status, nil)
+	status, _ = request("teacher", "POST", "/v1/quizzes/"+qid+"/publish", map[string]any{})
+	check(409, status, nil)
+	status, q1 := request("teacher", "POST", "/v1/quizzes/"+qid+"/questions", map[string]any{
+		"prompt": "Which answer equals 4?", "options": []string{"1", "2", "3", "4"}, "correct_option": 3, "position": 1})
+	check(201, status, q1)
+	status, q2 := request("teacher", "POST", "/v1/quizzes/"+qid+"/questions", map[string]any{
+		"prompt": "Which answer equals 9?", "options": []string{"6", "7", "9", "8"}, "correct_option": 2, "position": 2})
+	check(201, status, q2)
+	status, preview := request("teacher", "GET", "/v1/quizzes/"+qid, nil)
+	check(200, status, preview)
+	if preview["items"].([]any)[0].(map[string]any)["correct_option"] == nil {
+		t.Fatalf("teacher preview missing key: %+v", preview)
+	}
+	status, _ = request("teacher", "POST", "/v1/quizzes/"+qid+"/publish", map[string]any{})
+	check(200, status, nil)
+	status, _ = request("teacher", "POST", "/v1/quizzes/"+qid+"/questions", map[string]any{
+		"prompt": "Late edit", "options": []string{"1", "2", "3", "4"}, "correct_option": 0, "position": 3})
+	check(409, status, nil)
+	status, _ = request("guardian", "GET", "/v1/quizzes/"+qid, nil)
+	check(403, status, nil)
+
+	// A valid JWT issued for another school cannot enumerate this quiz.
+	var outsideID string
+	if err := db.QueryRowContext(ctx, "INSERT INTO users(email,display_name) VALUES($1,'Outsider') RETURNING id::text", "outside-"+suffix+"@example.test").Scan(&outsideID); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.ExecContext(ctx, "INSERT INTO school_memberships(school_id,user_id,role) VALUES($1::uuid,$2::uuid,'student')", schoolB, outsideID); err != nil {
+		t.Fatal(err)
+	}
+	tokens["outsider"], err = v.Issue(auth.Claims{Subject: outsideID, SchoolID: schoolB, Roles: []string{"student"}}, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	status, _ = request("outsider", "GET", "/v1/quizzes/"+qid, nil)
+	check(403, status, nil)
+	status, _ = request("outsider", "POST", "/v1/quizzes/"+qid+"/start", map[string]any{})
+	check(403, status, nil)
+
+	status, _ = request("principal", "GET", "/v1/quizzes/"+qid+"/results", nil)
+	check(200, status, nil)
+	status, notStarted := request("student", "GET", "/v1/quizzes/"+qid, nil)
+	check(200, status, notStarted)
+	if len(notStarted["items"].([]any)) != 0 {
+		t.Fatal("exam questions leaked before start")
+	}
+	status, _ = request("student", "POST", "/v1/quizzes/"+qid+"/submit", map[string]any{"answers": map[string]int{q1["id"].(string): 3, q2["id"].(string): 2}})
+	check(409, status, nil)
+	status, started := request("student", "POST", "/v1/quizzes/"+qid+"/start", map[string]any{})
+	check(200, status, started)
+	status, startAgain := request("student", "POST", "/v1/quizzes/"+qid+"/start", map[string]any{})
+	check(200, status, startAgain)
+	if started["expires_at"] != startAgain["expires_at"] {
+		t.Fatal("attempt time reset by start")
+	}
+	status, exam := request("student", "GET", "/v1/quizzes/"+qid, nil)
+	check(200, status, exam)
+	if len(exam["items"].([]any)) != 2 {
+		t.Fatal("student missing questions")
+	}
+	for _, item := range exam["items"].([]any) {
+		if _, leak := item.(map[string]any)["correct_option"]; leak {
+			t.Fatal("student leaked grading key")
+		}
+	}
+	status, _ = request("student", "POST", "/v1/quizzes/"+qid+"/submit", map[string]any{
+		"answers": map[string]int{q1["id"].(string): 3}})
+	check(400, status, nil)
+	status, grade := request("student", "POST", "/v1/quizzes/"+qid+"/submit", map[string]any{
+		"answers": map[string]int{q1["id"].(string): 3, q2["id"].(string): 0}})
+	check(200, status, grade)
+	if grade["grade"].(float64) != 5 {
+		t.Fatalf("incorrect auto-grade: %+v", grade)
+	}
+	status, _ = request("student", "POST", "/v1/quizzes/"+qid+"/submit", map[string]any{
+		"answers": map[string]int{q1["id"].(string): 3, q2["id"].(string): 2}})
+	check(409, status, nil)
+	status, afterSubmit := request("student", "GET", "/v1/quizzes/"+qid, nil)
+	check(200, status, afterSubmit)
+	if len(afterSubmit["items"].([]any)) != 0 || afterSubmit["grade"].(float64) != 5 {
+		t.Fatalf("exam leaked after submit: %+v", afterSubmit)
+	}
+	status, results := request("teacher", "GET", "/v1/quizzes/"+qid+"/results", nil)
+	check(200, status, results)
+	if len(results["items"].([]any)) != 1 {
+		t.Fatalf("quiz results missing: %+v", results)
+	}
+	status, _ = request("student", "GET", "/v1/quizzes/"+qid+"/results", nil)
+	check(403, status, nil)
+	status, _ = request("principal", "GET", "/v1/classes/"+schoolB+"/quizzes", nil)
+	check(404, status, nil)
+
 	status, _ = request("student", "POST", "/v1/assignments/"+aid+"/submissions", map[string]any{"content": "Bài làm của học sinh"})
 	check(200, status, nil)
 	status, _ = request("teacher", "PATCH", "/v1/assignments/"+aid+"/submissions", map[string]any{"student_id": ids["student"], "grade": 9, "feedback": "Làm tốt"})
@@ -229,4 +330,33 @@ func TestSchoolLearningOperationsPostgres(t *testing.T) {
 	if overview["classes"].(float64) != 1 || overview["students"].(float64) != 1 || overview["teachers"].(float64) != 1 {
 		t.Fatalf("wrong overview: %+v", overview)
 	}
+
+	// Server deadline cannot be bypassed by a submitted answer after expiry.
+	var lateStudent string
+	if err := db.QueryRowContext(ctx, "INSERT INTO users(email,display_name) VALUES($1,'Late Student') RETURNING id::text", "late-"+suffix+"@example.test").Scan(&lateStudent); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.ExecContext(ctx, "INSERT INTO school_memberships(school_id,user_id,role) VALUES($1::uuid,$2::uuid,'student')", schoolA, lateStudent); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.ExecContext(ctx, "INSERT INTO class_students(school_id,class_id,student_id) VALUES($1::uuid,$2::uuid,$3::uuid)", schoolA, classID, lateStudent); err != nil {
+		t.Fatal(err)
+	}
+	tokens["late"], err = v.Issue(auth.Claims{Subject: lateStudent, SchoolID: schoolA, Roles: []string{"student"}}, time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	status, _ = request("late", "POST", "/v1/quizzes/"+qid+"/start", map[string]any{})
+	check(200, status, nil)
+	if _, err := db.ExecContext(ctx, "UPDATE quiz_attempts SET expires_at=now()-interval '1 minute' WHERE quiz_id=$1::uuid AND student_id=$2::uuid", qid, lateStudent); err != nil {
+		t.Fatal(err)
+	}
+	status, _ = request("late", "POST", "/v1/quizzes/"+qid+"/submit", map[string]any{"answers": map[string]int{q1["id"].(string): 3, q2["id"].(string): 2}})
+	check(409, status, nil)
+	status, expired := request("late", "GET", "/v1/quizzes/"+qid, nil)
+	check(200, status, expired)
+	if len(expired["items"].([]any)) != 0 {
+		t.Fatal("expired attempt leaked exam questions")
+	}
+
 }

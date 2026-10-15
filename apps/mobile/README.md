@@ -34,3 +34,7 @@ Never embed passwords, JWT secrets, private Railway URLs, database credentials o
 ## Personal lesson bookmarks and progress
 
 Open a published text lesson from the library, then use `Lưu bài` or `Đánh dấu đã học` in the native lesson dialog. Both flags are sent to the Go API over authenticated HTTPS; they are not persisted in plaintext on the phone. Guests can still read *public* permitted text but cannot save personal progress. School-only lessons require an active logged-in session, independent of the saved state.
+
+## Timed school exams
+
+Open a class in the School tab to see its published timed quizzes. Enrolled students can start a server-timed attempt, choose one of four answers per question, submit once, and view the server-calculated score. Correct answers are never included in student API responses. Exam creation/editing and staff results remain on the Web dashboard until complete native staff UX is implemented. API endpoints are in `docs/QUIZ_EXAMS.md`. Flutter widget tests validate app navigation; native quiz device acceptance requires a configured HTTPS mobile API endpoint.

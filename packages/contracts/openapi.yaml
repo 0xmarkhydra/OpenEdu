@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: OpenEdu Core API
-  version: 0.5.0
+  version: 0.6.0
   description: |
     Licensed library, tenant-isolated school operations, parent portal,
     assignments, attendance and editorial workflows. Source examples and
@@ -721,6 +721,146 @@ paths:
         '400': {description: Invalid lesson or request body}
         '401': {description: Sign-in required}
         '404': {description: Lesson not published or not visible to school}
+  /v1/classes/{id}/quizzes:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: listClassQuizzes
+      description: Teacher or enrolled student list. Only published quizzes visible to students; answer keys never returned.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Class-scoped quizzes}
+        '403': {description: Class access denied}
+    post:
+      operationId: createDraftQuiz
+      description: Class teacher or school leader creates a timed draft.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, duration_minutes, due_at]
+              properties:
+                title: {type: string, minLength: 3, maxLength: 180}
+                duration_minutes: {type: integer, minimum: 5, maximum: 180}
+                due_at: {type: string, format: date-time}
+      responses:
+        '201': {description: Quiz draft created}
+        '403': {description: Teacher permission denied}
+  /v1/quizzes/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getExamDetail
+      description: Staff see answer keys; enrolled students see questions only during their active timed attempt. Never return correct_option to students.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Quiz metadata and authorized questions}
+        '403': {description: Not authorized}
+        '404': {description: Quiz not visible}
+  /v1/quizzes/{id}/questions:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    post:
+      operationId: appendDraftQuizQuestion
+      description: Staff-only; questions immutable after quiz publication.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt, options, correct_option, position]
+              properties:
+                prompt: {type: string, minLength: 3, maxLength: 2000}
+                options:
+                  type: array
+                  minItems: 4
+                  maxItems: 4
+                  items: {type: string, minLength: 1, maxLength: 500}
+                correct_option: {type: integer, minimum: 0, maximum: 3}
+                position: {type: integer, minimum: 1, maximum: 100}
+      responses:
+        '201': {description: Question created in draft}
+        '403': {description: Teacher only}
+        '409': {description: Published quiz or duplicate position}
+  /v1/quizzes/{id}/publish:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    post:
+      operationId: publishQuiz
+      description: Publish draft with at least one question and a future deadline.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Quiz published}
+        '409': {description: Draft incomplete, closed or already published}
+  /v1/quizzes/{id}/start:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    post:
+      operationId: beginTimedQuizAttempt
+      description: Enrolled student begins exactly one server-timed attempt; repeated starts cannot extend deadline.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Existing or new attempt, expiry and grade}
+        '403': {description: Not enrolled}
+        '409': {description: Quiz unavailable or closed}
+  /v1/quizzes/{id}/submit:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    post:
+      operationId: submitQuizForServerGrading
+      description: All question IDs must be answered once; correct answers never returned, grading is server-side.
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [answers]
+              properties:
+                answers:
+                  type: object
+                  additionalProperties: {type: integer, minimum: 0, maximum: 3}
+      responses:
+        '200': {description: Graded attempt and number correct}
+        '400': {description: Invalid or incomplete answers}
+        '409': {description: Not started, expired, or already submitted}
+  /v1/quizzes/{id}/results:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      operationId: getQuizClassResults
+      description: Assigned teacher or school administrator only; no student cross-access.
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Class quiz attempts and scores}
+        '403': {description: Teacher permissions required}
   /health/live:
     get:
       operationId: getLiveness

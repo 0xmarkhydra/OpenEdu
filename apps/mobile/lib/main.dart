@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'core/api.dart';
 import 'features/reading/lesson_dialog.dart';
+import 'features/quizzes/quiz_screen.dart';
 
 const ink = Color(0xFF1A2E54);
 const blue = Color(0xFF4B80EF);
@@ -246,6 +247,10 @@ class _OpenEduHomeState extends State<OpenEduHome> {
           leading:const Icon(LucideIcons.school,color:blue),
           title:Text(c['name']?.toString()??'Lớp học',style:const TextStyle(fontWeight:FontWeight.w700)),
           subtitle:Text('Khối ${c['grade']} · ${c['academic_year']}'),
+          trailing:const Icon(LucideIcons.chevronRight,color:blue),
+          onTap:()=>Navigator.push<void>(context,MaterialPageRoute(
+            builder:(_)=>QuizScreen(api:api,classId:c['id'].toString(),
+              className:c['name']?.toString()??'Lớp học'))),
         )))),
       const SizedBox(height:25),
       const Text('Thông báo',style:TextStyle(fontSize:20,fontWeight:FontWeight.w800,color:ink)),

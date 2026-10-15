@@ -121,3 +121,24 @@ html{color-scheme:light}body{font-family:-apple-system,BlinkMacSystemFont,"SF Pr
 .book-progress{display:inline-flex;align-items:center;gap:9px;background:#eaf0ff;color:#345ac7;border:1px solid #d4e1ff;border-radius:12px;padding:10px 14px;font-size:14px;font-weight:700;margin-bottom:22px}
 .reading-markers{display:inline-flex;align-items:center;gap:10px;flex-shrink:0;color:#5675d8}
 @media(max-width:650px){.reader-action-buttons .ui-button{width:100%}}
+/* OpenEdu secure classroom quizzes */
+.quiz-studio{display:grid;grid-template-columns:minmax(270px,.85fr) minmax(0,1.15fr);align-items:start;gap:18px;padding-bottom:26px}
+.quiz-studio>.glass-card{min-width:0}
+.quiz-studio h2{margin-top:0}
+.quiz-label{display:grid;gap:7px;margin:18px 0 12px;font-size:13px;font-weight:700;color:#456286}
+.quiz-label select{border-radius:14px;border:1px solid #dae4f4;background:#fff;padding:12px 14px;min-height:44px;color:#29446c;width:100%}
+.quiz-list{display:grid;gap:10px}
+.quiz-list .class-item{width:100%;text-align:left;min-height:70px;display:grid;gap:6px}
+.quiz-list small{display:flex;align-items:center;gap:5px;flex-wrap:wrap;color:#6b7e9d}
+.quiz-studio .portal-form h3{display:flex;align-items:center;gap:7px}
+.quiz-title{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.quiz-question{border:1px solid #dfe8f7;background:#f9fbffed;border-radius:17px;padding:16px;margin:12px 0;min-width:0}
+.quiz-question legend{display:block;padding:4px 0;width:100%;line-height:1.5}
+.quiz-question p{margin:7px 0;color:#536b91}
+.quiz-option{display:flex;align-items:center;gap:11px;padding:10px 7px;border-radius:10px;cursor:pointer;min-height:44px}
+.quiz-option:hover{background:#eaf1ff}
+.quiz-option input{width:18px;height:18px;accent-color:#5375e8}
+.quiz-clock{display:flex;align-items:center;gap:8px;color:#365fba;font-weight:700}
+.quiz-score{display:flex;align-items:center;gap:10px;background:#e9f2ff;color:#3165a8;border-radius:13px;padding:14px;margin:16px 0;font-weight:800}
+@media(max-width:920px){.quiz-studio{grid-template-columns:1fr}}
+@media(max-width:550px){.quiz-question{padding:12px}.quiz-title h2{font-size:20px}}

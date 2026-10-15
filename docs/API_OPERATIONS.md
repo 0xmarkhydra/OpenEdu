@@ -85,3 +85,7 @@ Signed-in readers may save their own progress for any *published* lesson that th
 - Migration: append-only `0006_reader_progress.sql`. Archived/restricted lessons return 404, progress belonging to different users is not readable; cross-school writes are rejected.
 
 Reminder: no PDF/offline access, analytics, consent audit, or school-wide progress tracking is implied by personal reading progress.
+
+## Timed auto-graded exams (v0.6)
+
+`docs/QUIZ_EXAMS.md` contains the Vietnamese role and security guide for eight quiz endpoints: class quiz list and creation, staff-only question authoring and publishing, detail access restricted by active attempt, student start and submit, and class-level results. Answers are graded by Go API server and never delivered as `correct_option` to a student. Multi-tenant PostgreSQL tests reject cross-school users, guardians, expired submissions, duplicate submissions and attempts to edit published exams.

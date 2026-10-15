@@ -48,3 +48,6 @@ Visual QA on mobile Safari and desktop Safari, keyboard audits, low-power GPU sa
 ## Lesson reader interaction
 
 Authenticated readers have clearly labeled **BookmarkCheck / Bookmark** and **CheckCheck / CheckCircle2** actions, with useful disabled/busy/error states and screen-readable text. The book outline shows completed count and per-lesson markers, never just color. Keep guest reader and school-only content access separated. Native Flutter reader uses the matching Lucide symbols via `lucide_icons_flutter`, with backend progress persistence.
+
+## Quiz interface
+Use Lucide FileQuestion/ClipboardList/AlarmClock/Send/CheckCircle2 from a single icon pack in web; mobile uses matching Lucide icons. All questions must have explicit label/text, four numbered options, keyboard-operable radio groups, error/status messages and visible deadline indication. Backend is authoritative for remaining time and scoring. No decorative controls; avoid exposing answer keys on any student route.
